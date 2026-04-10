@@ -206,6 +206,7 @@ function initAdminPanel() {
             });
             
             codeText.textContent = '****************';
+            codeText.classList.add('code-hidden');
             isCodeVisible = false;
             toggleCodeBtn.textContent = 'Show';
             generatedCodeDisplay.classList.remove('hidden');
