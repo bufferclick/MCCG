@@ -908,3 +908,128 @@ body {
     .admin-header { flex-direction: column; gap: 12px; padding: 16px; }
     .admin-header-right { flex-wrap: wrap; }
 }
+
+/* Profile sub text */
+.profile-sub-text {
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+/* Profile avatar - default state has no background */
+.profile-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    overflow: hidden;
+    background: transparent;
+}
+
+/* File input */
+.file-input {
+    background: rgba(0,0,0,0.2);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    width: 100%;
+    cursor: pointer;
+}
+
+.file-input::-webkit-file-upload-button {
+    background: var(--accent-primary);
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 13px;
+    margin-right: 8px;
+}
+
+.file-hint {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 4px;
+}
+
+/* Upload Progress */
+.upload-progress {
+    margin-top: 8px;
+}
+
+.upload-bar {
+    width: 100%;
+    height: 4px;
+    background: var(--bg-tertiary);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 4px;
+}
+
+.upload-fill {
+    height: 100%;
+    width: 0%;
+    background: var(--accent-primary);
+    border-radius: 2px;
+    transition: width 0.2s ease;
+}
+
+.upload-label {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+/* Ticket attachment */
+.ticket-attachment {
+    margin-bottom: 10px;
+}
+
+.attachment-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(88,101,242,0.1);
+    border: 1px solid var(--accent-primary);
+    color: var(--accent-primary);
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    text-decoration: none;
+    transition: background 0.2s;
+}
+
+.attachment-link:hover {
+    background: rgba(88,101,242,0.2);
+    text-decoration: none;
+}
+
+/* Ticket pfp types */
+.ticket-pfp-initial {
+    background: var(--accent-primary);
+    color: white;
+    font-size: 14px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ticket-pfp-grey {
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ticket-date-small {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
