@@ -23,7 +23,6 @@ const newNameInput = document.getElementById('new-name-input');
 const saveNameBtn = document.getElementById('save-name-btn');
 const cancelNameBtn = document.getElementById('cancel-name-btn');
 const notLoggedInBanner = document.getElementById('not-logged-in-banner');
-
 const submitTicketBtn = document.getElementById('submit-ticket-btn');
 const ticketSubject = document.getElementById('ticket-subject');
 const ticketCategory = document.getElementById('ticket-category');
@@ -40,7 +39,6 @@ window.addEventListener('DOMContentLoaded', () => {
     } else {
         notLoggedInBanner.classList.remove('hidden');
         displayEmailText.textContent = 'Not logged in';
-        // Still load tickets anonymously by session
         loadMyTickets(null);
     }
 });
@@ -57,7 +55,6 @@ async function loadUserProfile(email) {
             const keys = Object.keys(data);
             currentUserKey = keys[0];
             const user = data[keys[0]];
-
             isAdminUser = user.owner === true;
 
             if (user.displayName) {
@@ -69,7 +66,6 @@ async function loadUserProfile(email) {
                 displayNameText.textContent = currentDisplayName;
             }
 
-            // Update avatar initial
             updateAvatarDisplay();
         }
     } catch (error) {
@@ -81,6 +77,7 @@ async function loadUserProfile(email) {
 
 function updateAvatarDisplay() {
     const initial = currentDisplayName.charAt(0).toUpperCase();
+    profileAvatarEl.textContent = '';
     profileAvatarEl.textContent = initial;
 }
 
@@ -92,7 +89,6 @@ editNameBtn.addEventListener('click', () => {
 });
 
 editNameBackdrop.addEventListener('click', () => { editNameModal.classList.add('hidden'); });
-
 cancelNameBtn.addEventListener('click', () => { editNameModal.classList.add('hidden'); });
 
 saveNameBtn.addEventListener('click', async () => {
@@ -149,7 +145,6 @@ submitTicketBtn.addEventListener('click', async () => {
         ticketDescription.value = '';
         ticketCategory.value = 'login';
         ticketSuccessMsg.classList.remove('hidden');
-
         setTimeout(() => { ticketSuccessMsg.classList.add('hidden'); }, 5000);
 
     } catch (error) {
@@ -161,17 +156,12 @@ submitTicketBtn.addEventListener('click', async () => {
 
 // Load My Tickets
 function loadMyTickets(email) {
-    const sessionId = sessionStorage.getItem('mccg_session_id') || (() => {
-        const id = 'guest_' + Math.random().toString(36).substr(2, 9);
-        sessionStorage.setItem('mccg_session_id', id);
-        return id;
-    })();
+    if (!email) {
+        myTicketsList.innerHTML = '<p class="empty-state">Please log in to view your tickets.</p>';
+        return;
+    }
 
-    const query = email
-        ? database.ref('tickets').orderByChild('authorEmail').equalTo(email)
-        : database.ref('tickets').orderByChild('sessionId').equalTo(sessionId);
-
-    query.on('value', (snapshot) => {
+    database.ref('tickets').orderByChild('authorEmail').equalTo(email).on('value', (snapshot) => {
         const tickets = snapshot.val();
         let html = '';
         let count = 0;
