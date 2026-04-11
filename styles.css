@@ -40,7 +40,7 @@ body {
     padding: 20px;
 }
 
-/* MCCG Login Screen */
+/* MCCG Header */
 .mccg-container {
     text-align: center;
     max-width: 950px;
@@ -66,6 +66,13 @@ body {
     color: var(--text-secondary);
     font-size: 18px;
     font-weight: 400;
+    margin-bottom: 6px;
+}
+
+.location-tag {
+    color: var(--text-muted);
+    font-size: 13px;
+    margin-top: 4px;
 }
 
 .login-preview-wrapper {
@@ -204,7 +211,7 @@ body {
     background: rgba(255, 255, 255, 0.1);
 }
 
-/* Browser Content - FIXED SIZE */
+/* Browser Content - FIXED SIZE, NO LAYOUT SHIFT */
 .browser-content {
     background: #313338;
     width: 100%;
@@ -214,13 +221,16 @@ body {
 }
 
 .browser-content iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
-    display: block;
     border: none;
+    display: block;
 }
 
-/* Error Page - Positioned absolutely within browser-content */
+/* Error Page - layered on top of iframe */
 .error-page {
     position: absolute;
     top: 0;
@@ -357,7 +367,7 @@ body {
     padding: 48px;
     border-radius: 16px;
     text-align: center;
-    max-width: 500px;
+    max-width: 540px;
     width: 100%;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
     border: 1px solid var(--border-color);
@@ -400,20 +410,39 @@ body {
 }
 
 .error-box {
-    max-width: 520px;
+    max-width: 560px;
 }
 
+/* Auth Notice Banner */
+.auth-notice-banner {
+    background: rgba(88, 101, 242, 0.1);
+    border: 1px solid var(--accent-primary);
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+    text-align: left;
+}
+
+.auth-notice-banner p {
+    color: #a8b0ff;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+/* Warning Banner */
 .warning-banner {
     background: rgba(250, 166, 26, 0.1);
     border: 1px solid var(--accent-warning);
     border-radius: 8px;
     padding: 16px;
     margin-bottom: 24px;
+    text-align: left;
 }
 
 .warning-banner p {
     color: var(--accent-warning);
     font-size: 14px;
+    line-height: 1.6;
 }
 
 .error-message {
@@ -472,7 +501,7 @@ body {
     color: var(--text-primary);
 }
 
-/* Eye Button for Show/Hide */
+/* Eye Button */
 .eye-btn {
     background: transparent;
     border: none;
@@ -778,19 +807,19 @@ body {
     .browser-window {
         width: 100%;
     }
-    
+
     .browser-content {
         height: 500px;
     }
-    
+
     .mccg-header h1 {
         font-size: 40px;
     }
-    
+
     .mccg-header .tagline {
         font-size: 14px;
     }
-    
+
     .admin-content {
         padding: 16px;
     }
@@ -800,33 +829,37 @@ body {
     .browser-content {
         height: 450px;
     }
-    
+
     .browser-chrome {
         padding: 6px 10px;
     }
-    
+
     .url-bar {
         padding: 4px 8px;
     }
-    
+
     .url-input {
         font-size: 12px;
     }
-    
+
     .generated-code {
         flex-wrap: wrap;
     }
-    
+
     .generated-code span:first-child {
         min-width: 150px;
         font-size: 12px;
     }
-    
+
     .modal-content {
         padding: 24px;
     }
-    
+
     .modal-buttons {
         flex-direction: column;
+    }
+
+    .status-box {
+        padding: 32px 24px;
     }
 }
