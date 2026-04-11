@@ -1,17 +1,20 @@
-// Firebase Configuration
 const firebaseConfig = {
-    databaseURL: "https://kom-tm-default-rtdb.europe-west1.firebasedatabase.app/",
-    storageBucket: "kom-tm.appspot.com"
+    databaseURL: "https://kom-tm-default-rtdb.europe-west1.firebasedatabase.app/"
 };
 
 firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
-const storage = firebase.storage();
+
+// ImgBB API key
+const IMGBB_API_KEY = 'bc1c7edb270f7c38725b31c47680d9bb';
 
 let currentUserEmail = null;
 let currentUserKey = null;
 let currentDisplayName = 'Anonymous';
 let isAdminUser = false;
+let currentTicketKey = null;
+let pendingImageURL = null;
+let chatListener = null;
 
 // Elements
 const displayNameText = document.getElementById('display-name-text');
@@ -28,17 +31,25 @@ const submitTicketBtn = document.getElementById('submit-ticket-btn');
 const ticketSubject = document.getElementById('ticket-subject');
 const ticketCategory = document.getElementById('ticket-category');
 const ticketDescription = document.getElementById('ticket-description');
-const ticketFile = document.getElementById('ticket-file');
 const ticketSuccessMsg = document.getElementById('ticket-success-msg');
 const ticketErrorMsg = document.getElementById('ticket-error-msg');
 const myTicketsList = document.getElementById('my-tickets-list');
 const myTicketCount = document.getElementById('my-ticket-count');
 const ticketsSectionTitle = document.getElementById('tickets-section-title');
-const uploadProgress = document.getElementById('ticket-upload-progress');
-const uploadFill = document.getElementById('upload-fill');
+const ticketsListView = document.getElementById('tickets-list-view');
+const chatView = document.getElementById('chat-view');
+const chatMessages = document.getElementById('chat-messages');
+const chatInput = document.getElementById('chat-input');
+const sendMsgBtn = document.getElementById('send-msg-btn');
+const backBtn = document.getElementById('back-to-tickets-btn');
+const chatTicketTitle = document.getElementById('chat-ticket-title');
+const chatTicketStatus = document.getElementById('chat-ticket-status');
+const attachBtn = document.getElementById('attach-btn');
+const imagePreviewArea = document.getElementById('image-preview-area');
+const previewImg = document.getElementById('preview-img');
+const removePreviewBtn = document.getElementById('remove-preview-btn');
 
-// Default grey silhouette SVG as HTML
-const defaultPfpSVG = `<svg viewBox="0 0 24 24" width="36" height="36" fill="#8e9297">
+const defaultPfpSVG = `<svg viewBox="0 0 24 24" width="32" height="32" fill="#8e9297">
     <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
 </svg>`;
 
@@ -50,8 +61,7 @@ window.addEventListener('DOMContentLoaded', () => {
         loadUserProfile(storedEmail);
     } else {
         notLoggedInBanner.classList.remove('hidden');
-        // Still load all tickets so guests can see them
-        loadAllTickets();
+        loadTickets();
     }
 });
 
@@ -71,43 +81,43 @@ async function loadUserProfile(email) {
             if (user.displayName) {
                 currentDisplayName = user.displayName;
                 displayNameText.textContent = user.displayName;
-                profileSubText.textContent = isAdminUser ? 'Admin' : '';
                 newNameInput.value = user.displayName;
             } else {
                 displayNameText.textContent = 'Anonymous';
-                profileSubText.textContent = 'Press "Edit Display Name" to set your name';
             }
 
+            profileSubText.textContent = isAdminUser ? 'Admin' : 'Press "Edit Display Name" to set your name';
             updateAvatarDisplay();
         }
     } catch (error) {
         console.error('Error loading profile:', error);
     }
 
-    // Show title based on admin
     if (isAdminUser) {
         ticketsSectionTitle.textContent = 'All Tickets';
-        loadAllTickets();
     } else {
         ticketsSectionTitle.textContent = 'My Tickets';
-        loadMyTickets(email);
     }
+
+    loadTickets();
 }
 
 function updateAvatarDisplay() {
+    profileAvatarEl.style.background = 'transparent';
     if (isAdminUser) {
-        // Admin gets logo with background
         profileAvatarEl.innerHTML = `<img src="${adminPfpURL}" alt="Admin" style="width:36px;height:36px;border-radius:50%;object-fit:cover;">`;
     } else if (currentDisplayName !== 'Anonymous') {
-        // Named user gets initial
         const initial = currentDisplayName.charAt(0).toUpperCase();
         profileAvatarEl.innerHTML = `<span style="font-size:18px;font-weight:700;color:white;">${initial}</span>`;
         profileAvatarEl.style.background = 'var(--accent-primary)';
         profileAvatarEl.style.borderRadius = '50%';
+        profileAvatarEl.style.width = '36px';
+        profileAvatarEl.style.height = '36px';
+        profileAvatarEl.style.display = 'flex';
+        profileAvatarEl.style.alignItems = 'center';
+        profileAvatarEl.style.justifyContent = 'center';
     } else {
-        // Default grey silhouette
         profileAvatarEl.innerHTML = defaultPfpSVG;
-        profileAvatarEl.style.background = 'transparent';
     }
 }
 
@@ -124,13 +134,11 @@ cancelNameBtn.addEventListener('click', () => { editNameModal.classList.add('hid
 saveNameBtn.addEventListener('click', async () => {
     const name = newNameInput.value.trim();
     if (!name) return;
-
     currentDisplayName = name;
     displayNameText.textContent = name;
     profileSubText.textContent = isAdminUser ? 'Admin' : '';
     updateAvatarDisplay();
     editNameModal.classList.add('hidden');
-
     if (currentUserKey) {
         try {
             await database.ref('logins/' + currentUserKey).update({ displayName: name });
@@ -147,7 +155,6 @@ submitTicketBtn.addEventListener('click', async () => {
     const subject = ticketSubject.value.trim();
     const category = ticketCategory.value;
     const description = ticketDescription.value.trim();
-    const file = ticketFile.files[0];
 
     ticketSuccessMsg.classList.add('hidden');
     ticketErrorMsg.classList.add('hidden');
@@ -158,51 +165,8 @@ submitTicketBtn.addEventListener('click', async () => {
         return;
     }
 
-    if (file && file.size > 5 * 1024 * 1024) {
-        ticketErrorMsg.textContent = 'File is too large. Maximum size is 5MB.';
-        ticketErrorMsg.classList.remove('hidden');
-        return;
-    }
-
     submitTicketBtn.disabled = true;
     submitTicketBtn.textContent = 'Submitting...';
-
-    let fileURL = null;
-    let fileName = null;
-
-    // Upload file if provided
-    if (file) {
-        try {
-            uploadProgress.classList.remove('hidden');
-            const fileRef = storage.ref(`ticket-files/${Date.now()}_${file.name}`);
-            const uploadTask = fileRef.put(file);
-
-            await new Promise((resolve, reject) => {
-                uploadTask.on('state_changed',
-                    (snapshot) => {
-                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                        uploadFill.style.width = progress + '%';
-                    },
-                    reject,
-                    async () => {
-                        fileURL = await uploadTask.snapshot.ref.getDownloadURL();
-                        fileName = file.name;
-                        resolve();
-                    }
-                );
-            });
-
-            uploadProgress.classList.add('hidden');
-        } catch (error) {
-            console.error('File upload error:', error);
-            ticketErrorMsg.textContent = 'File upload failed. Please try again.';
-            ticketErrorMsg.classList.remove('hidden');
-            submitTicketBtn.disabled = false;
-            submitTicketBtn.textContent = 'Submit Ticket';
-            uploadProgress.classList.add('hidden');
-            return;
-        }
-    }
 
     try {
         const ticketData = {
@@ -214,17 +178,24 @@ submitTicketBtn.addEventListener('click', async () => {
             authorKey: currentUserKey || null,
             isAdmin: isAdminUser,
             status: 'open',
-            createdAt: new Date().toISOString(),
-            fileURL: fileURL,
-            fileName: fileName
+            createdAt: new Date().toISOString()
         };
 
-        await database.ref('tickets').push(ticketData);
+        const ref = await database.ref('tickets').push(ticketData);
+
+        // Add first message as the description
+        await database.ref('ticket_messages/' + ref.key).push({
+            text: description,
+            author: currentDisplayName,
+            authorEmail: currentUserEmail || 'anonymous',
+            isAdmin: isAdminUser,
+            timestamp: new Date().toISOString(),
+            type: 'text'
+        });
 
         ticketSubject.value = '';
         ticketDescription.value = '';
         ticketCategory.value = 'login';
-        ticketFile.value = '';
         ticketSuccessMsg.classList.remove('hidden');
         setTimeout(() => { ticketSuccessMsg.classList.add('hidden'); }, 5000);
 
@@ -238,84 +209,282 @@ submitTicketBtn.addEventListener('click', async () => {
     submitTicketBtn.textContent = 'Submit Ticket';
 });
 
-// Load ALL tickets (for admins and the shared ticket board)
-function loadAllTickets() {
-    database.ref('tickets').on('value', (snapshot) => {
-        renderTickets(snapshot.val());
-    });
-}
-
-// Load tickets for a specific user
-function loadMyTickets(email) {
-    database.ref('tickets').orderByChild('authorEmail').equalTo(email).on('value', (snapshot) => {
-        renderTickets(snapshot.val());
-    });
-}
-
-function renderTickets(tickets) {
-    let html = '';
-    let count = 0;
-
-    if (tickets) {
-        Object.keys(tickets).reverse().forEach(key => {
-            const ticket = tickets[key];
-            count++;
-            const date = new Date(ticket.createdAt).toLocaleString();
-            const statusClass = ticket.status || 'open';
-            const authorName = ticket.authorName || 'Anonymous';
-            const initial = authorName.charAt(0).toUpperCase();
-            const isAuthorAdmin = ticket.isAdmin || false;
-
-            // Determine pfp
-            let pfpHtml;
-            if (isAuthorAdmin) {
-                pfpHtml = `<img src="${adminPfpURL}" class="ticket-pfp" alt="Admin">`;
-            } else if (authorName !== 'Anonymous') {
-                pfpHtml = `<div class="ticket-pfp-default ticket-pfp-initial">${initial}</div>`;
-            } else {
-                pfpHtml = `<div class="ticket-pfp-default ticket-pfp-grey">${defaultPfpSVG}</div>`;
-            }
-
-            // File attachment
-            const fileHtml = ticket.fileURL
-                ? `<div class="ticket-attachment">
-                     <a href="${escapeHtml(ticket.fileURL)}" target="_blank" class="attachment-link">
-                         <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/></svg>
-                         ${escapeHtml(ticket.fileName || 'Attachment')}
-                     </a>
-                   </div>`
-                : '';
-
-            html += `
-                <div class="ticket-card status-${statusClass}">
-                    <div class="ticket-header">
-                        <span class="ticket-title">${escapeHtml(ticket.subject)}</span>
-                        <div class="ticket-meta">
-                            <span class="ticket-status ${statusClass}">${statusClass}</span>
-                            <span class="ticket-category-badge">${escapeHtml(ticket.category)}</span>
-                        </div>
-                    </div>
-                    <div class="ticket-author-row">
-                        ${pfpHtml}
-                        <div>
-                            <div class="ticket-author-name">${escapeHtml(authorName)}</div>
-                            <div class="ticket-date-small">${date}</div>
-                        </div>
-                    </div>
-                    <p class="ticket-description">${escapeHtml(ticket.description)}</p>
-                    ${fileHtml}
-                    ${ticket.closeReason ? `<div class="ticket-close-reason">Closed by staff: ${escapeHtml(ticket.closeReason)}</div>` : ''}
-                    <div class="ticket-footer">
-                        <span class="ticket-date">${date}</span>
-                    </div>
-                </div>
-            `;
-        });
+// Load tickets
+function loadTickets() {
+    let query;
+    if (isAdminUser) {
+        query = database.ref('tickets');
+    } else if (currentUserEmail) {
+        query = database.ref('tickets').orderByChild('authorEmail').equalTo(currentUserEmail);
+    } else {
+        myTicketsList.innerHTML = '<p class="empty-state">Login to view your tickets.</p>';
+        return;
     }
 
-    myTicketsList.innerHTML = html || '<p class="empty-state">No tickets yet.</p>';
-    myTicketCount.textContent = count;
+    query.on('value', (snapshot) => {
+        const tickets = snapshot.val();
+        let html = '';
+        let count = 0;
+
+        if (tickets) {
+            Object.keys(tickets).reverse().forEach(key => {
+                const ticket = tickets[key];
+                count++;
+                const date = new Date(ticket.createdAt).toLocaleString();
+                const statusClass = ticket.status || 'open';
+                const authorName = ticket.authorName || 'Anonymous';
+
+                html += `
+                    <div class="ticket-card status-${statusClass}" data-key="${key}">
+                        <div class="ticket-header">
+                            <span class="ticket-title">${escapeHtml(ticket.subject)}</span>
+                            <div class="ticket-meta">
+                                <span class="ticket-status ${statusClass}">${statusClass}</span>
+                                <span class="ticket-category-badge">${escapeHtml(ticket.category)}</span>
+                            </div>
+                        </div>
+                        <p class="ticket-description" style="margin-bottom:12px;">${escapeHtml(ticket.description)}</p>
+                        <div class="ticket-footer">
+                            <span class="ticket-date">By ${escapeHtml(authorName)} — ${date}</span>
+                            <button class="open-chat-btn primary-btn" data-key="${key}" data-title="${escapeHtml(ticket.subject)}" data-status="${statusClass}">
+                                Open Chat
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        myTicketsList.innerHTML = html || '<p class="empty-state">No tickets yet.</p>';
+        myTicketCount.textContent = count;
+
+        document.querySelectorAll('.open-chat-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                openChat(this.dataset.key, this.dataset.title, this.dataset.status);
+            });
+        });
+    });
 }
+
+// Open Chat
+function openChat(ticketKey, title, status) {
+    currentTicketKey = ticketKey;
+    chatTicketTitle.textContent = title;
+    chatTicketStatus.textContent = status;
+    chatTicketStatus.className = 'ticket-status ' + status;
+
+    ticketsListView.classList.add('hidden');
+    chatView.classList.remove('hidden');
+    chatMessages.innerHTML = '';
+
+    // Remove previous listener
+    if (chatListener) {
+        database.ref('ticket_messages/' + chatListener).off();
+    }
+    chatListener = ticketKey;
+
+    database.ref('ticket_messages/' + ticketKey).on('value', (snapshot) => {
+        const messages = snapshot.val();
+        chatMessages.innerHTML = '';
+
+        if (messages) {
+            Object.keys(messages).forEach(key => {
+                const msg = messages[key];
+                renderMessage(msg);
+            });
+        }
+
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    });
+}
+
+function renderMessage(msg) {
+    const isMine = msg.authorEmail === currentUserEmail;
+    const isAdminMsg = msg.isAdmin || false;
+    const time = new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    let pfpHtml;
+    if (isAdminMsg) {
+        pfpHtml = `<img src="${adminPfpURL}" class="msg-pfp" alt="Admin">`;
+    } else if (msg.author && msg.author !== 'Anonymous') {
+        const initial = msg.author.charAt(0).toUpperCase();
+        pfpHtml = `<div class="msg-pfp msg-pfp-initial">${initial}</div>`;
+    } else {
+        pfpHtml = `<div class="msg-pfp msg-pfp-grey">${defaultPfpSVG}</div>`;
+    }
+
+    let contentHtml = '';
+    if (msg.type === 'image') {
+        contentHtml = `<img src="${escapeHtml(msg.imageURL)}" class="chat-image" alt="image" onclick="window.open('${escapeHtml(msg.imageURL)}','_blank')">`;
+    } else if (msg.type === 'video') {
+        contentHtml = `<video controls class="chat-video" src="${escapeHtml(msg.imageURL)}"></video>`;
+    } else {
+        contentHtml = `<p class="msg-text">${escapeHtml(msg.text)}</p>`;
+    }
+
+    const msgEl = document.createElement('div');
+    msgEl.className = `chat-message ${isMine ? 'mine' : 'theirs'}`;
+    msgEl.innerHTML = `
+        <div class="msg-pfp-wrap">${pfpHtml}</div>
+        <div class="msg-body">
+            <div class="msg-meta">
+                <span class="msg-author">${escapeHtml(msg.author || 'Anonymous')}</span>
+                <span class="msg-time">${time}</span>
+            </div>
+            ${contentHtml}
+        </div>
+    `;
+
+    chatMessages.appendChild(msgEl);
+}
+
+// Send message
+sendMsgBtn.addEventListener('click', sendMessage);
+chatInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+    }
+});
+
+async function sendMessage() {
+    const text = chatInput.value.trim();
+    if (!text && !pendingImageURL) return;
+    if (!currentTicketKey) return;
+
+    const msgData = {
+        author: currentDisplayName,
+        authorEmail: currentUserEmail || 'anonymous',
+        isAdmin: isAdminUser,
+        timestamp: new Date().toISOString()
+    };
+
+    if (pendingImageURL) {
+        const ext = pendingImageURL.toLowerCase();
+        if (ext.includes('.mp4') || ext.includes('.webm')) {
+            msgData.type = 'video';
+        } else {
+            msgData.type = 'image';
+        }
+        msgData.imageURL = pendingImageURL;
+        msgData.text = text || '';
+    } else {
+        msgData.type = 'text';
+        msgData.text = text;
+    }
+
+    try {
+        await database.ref('ticket_messages/' + currentTicketKey).push(msgData);
+        chatInput.value = '';
+        pendingImageURL = null;
+        imagePreviewArea.classList.add('hidden');
+        previewImg.src = '';
+    } catch (error) {
+        console.error('Error sending message:', error);
+    }
+}
+
+// Attach button - uses ImgBB upload
+attachBtn.addEventListener('click', () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*,video/mp4,video/webm';
+    input.click();
+
+    input.addEventListener('change', async () => {
+        const file = input.files[0];
+        if (!file) return;
+
+        const isVideo = file.type.startsWith('video/');
+
+        if (isVideo) {
+            // For video, create object URL for preview and upload differently
+            const objectURL = URL.createObjectURL(file);
+            // Videos can't be uploaded to ImgBB, store as data URL or skip preview
+            // Show preview
+            previewImg.src = '';
+            previewImg.style.display = 'none';
+            imagePreviewArea.classList.remove('hidden');
+
+            // Upload video to ImgBB is not supported, so we read as base64 and note URL
+            // Actually just create a blob URL for now (works within session)
+            pendingImageURL = objectURL;
+
+            const videoPreview = document.createElement('video');
+            videoPreview.src = objectURL;
+            videoPreview.controls = true;
+            videoPreview.style.cssText = 'max-width:100%;max-height:120px;border-radius:8px;';
+            const inner = document.querySelector('.image-preview-inner');
+            // Remove old video if any
+            const oldVideo = inner.querySelector('video');
+            if (oldVideo) oldVideo.remove();
+            inner.insertBefore(videoPreview, inner.querySelector('button'));
+            return;
+        }
+
+        // Image - upload to ImgBB
+        attachBtn.disabled = true;
+        attachBtn.style.opacity = '0.5';
+
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            const base64 = e.target.result.split(',')[1];
+
+            try {
+                const formData = new FormData();
+                formData.append('key', IMGBB_API_KEY);
+                formData.append('image', base64);
+
+                const response = await fetch('https://api.imgbb.com/1/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    pendingImageURL = data.data.url;
+                    previewImg.src = pendingImageURL;
+                    previewImg.style.display = 'block';
+                    imagePreviewArea.classList.remove('hidden');
+                } else {
+                    alert('Image upload failed. Please try again.');
+                }
+            } catch (error) {
+                console.error('ImgBB upload error:', error);
+                alert('Image upload failed. Please try again.');
+            }
+
+            attachBtn.disabled = false;
+            attachBtn.style.opacity = '1';
+        };
+
+        reader.readAsDataURL(file);
+    });
+});
+
+removePreviewBtn.addEventListener('click', () => {
+    pendingImageURL = null;
+    previewImg.src = '';
+    previewImg.style.display = 'none';
+    imagePreviewArea.classList.add('hidden');
+    const inner = document.querySelector('.image-preview-inner');
+    const oldVideo = inner.querySelector('video');
+    if (oldVideo) oldVideo.remove();
+});
+
+// Back to tickets
+backBtn.addEventListener('click', () => {
+    if (chatListener) {
+        database.ref('ticket_messages/' + chatListener).off();
+        chatListener = null;
+    }
+    currentTicketKey = null;
+    pendingImageURL = null;
+    imagePreviewArea.classList.add('hidden');
+    chatView.classList.add('hidden');
+    ticketsListView.classList.remove('hidden');
+});
 
 function escapeHtml(text) {
     if (!text) return '';
