@@ -163,7 +163,7 @@ function resetToDiscord() {
     loginIframe.style.display = 'block';
     
     // Reload iframe
-    loginIframe.src = 'https://mccglogin.pages.dev';
+    loginIframe.src = 'https://endearing-brioche-80f52a.netlify.app/';
 }
 
 // Listen for messages from the login iframe
