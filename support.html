@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/png" href="https://i.ibb.co/xS89yz2v/gpt-image-1-5-high-fidelity-a-Make-the-M-have-a-pu.png">
+
+    <!-- Discord Embed -->
+    <meta property="og:title" content="MCCG Support">
+    <meta property="og:description" content="Need help? Submit a support ticket and our team will get back to you.">
+    <meta property="og:image" content="https://i.ibb.co/HDxMBCcJ/gpt-image-1-5-high-fidelity-a-Make-the-M-have-a-pu.png">
+    <meta name="theme-color" content="#5865f2">
+
+    <title>MCCG - Support</title>
+</head>
+<body>
+    <div class="support-page">
+        <!-- Header -->
+        <header class="support-header">
+            <div class="support-header-inner">
+                <a href="/" class="support-logo">
+                    <img src="https://i.ibb.co/xS89yz2v/gpt-image-1-5-high-fidelity-a-Make-the-M-have-a-pu.png" alt="MCCG" class="support-logo-img">
+                    <span class="support-logo-text">MCCG</span>
+                    <span class="support-logo-sub">Support</span>
+                </a>
+                <nav class="support-nav">
+                    <a href="/" class="nav-link">Home</a>
+                </nav>
+            </div>
+        </header>
+
+        <!-- Not logged in notice -->
+        <div id="not-logged-in-banner" class="not-logged-in-banner hidden">
+            <p>You are not logged in. <a href="/">Login here</a> to link your tickets to your account.</p>
+        </div>
+
+        <!-- Profile Bar -->
+        <div class="profile-bar">
+            <div class="profile-bar-inner">
+                <div class="profile-info">
+                    <div class="profile-avatar" id="profile-avatar-el">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="white">
+                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                        </svg>
+                    </div>
+                    <div class="profile-details">
+                        <span class="profile-name" id="display-name-text">Guest</span>
+                        <span class="profile-email" id="display-email-text">Not logged in</span>
+                    </div>
+                </div>
+                <button id="edit-name-btn" class="icon-btn">Edit Display Name</button>
+            </div>
+        </div>
+
+        <!-- Edit Name Modal -->
+        <div id="edit-name-modal" class="modal hidden">
+            <div class="modal-backdrop" id="edit-name-backdrop"></div>
+            <div class="modal-content">
+                <h2 style="color:var(--text-primary)">Edit Display Name</h2>
+                <p>This name will be shown on your support tickets.</p>
+                <div class="modal-input-wrapper">
+                    <label for="new-name-input">Display Name</label>
+                    <input type="text" id="new-name-input" placeholder="Enter your name..." maxlength="32" autocomplete="off">
+                </div>
+                <div class="modal-buttons">
+                    <button id="cancel-name-btn" class="secondary-btn">Cancel</button>
+                    <button id="save-name-btn" class="primary-btn">Save</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <main class="support-main">
+            <!-- New Ticket -->
+            <section class="support-section">
+                <div class="section-header">
+                    <h2>Submit a Ticket</h2>
+                </div>
+                <div class="ticket-form">
+                    <div class="form-group">
+                        <label for="ticket-subject">Subject</label>
+                        <input type="text" id="ticket-subject" placeholder="Brief description of your issue..." maxlength="100" autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="ticket-category">Category</label>
+                        <select id="ticket-category" class="form-select">
+                            <option value="login">Login Issues</option>
+                            <option value="code">MC-CODE Problems</option>
+                            <option value="account">Account Issues</option>
+                            <option value="bug">Bug Report</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="ticket-description">Description</label>
+                        <textarea id="ticket-description" placeholder="Please describe your issue in detail..." rows="5" maxlength="1000"></textarea>
+                    </div>
+                    <button id="submit-ticket-btn" class="primary-btn">Submit Ticket</button>
+                    <p id="ticket-success-msg" class="success-msg hidden">Your ticket has been submitted. We will get back to you as soon as possible.</p>
+                    <p id="ticket-error-msg" class="error-msg hidden">Please fill in all fields before submitting.</p>
+                </div>
+            </section>
+
+            <!-- My Tickets -->
+            <section class="support-section">
+                <div class="section-header">
+                    <h2>My Tickets</h2>
+                    <span id="my-ticket-count" class="badge">0</span>
+                </div>
+                <div id="my-tickets-list" class="tickets-list">
+                    <p class="empty-state">No tickets yet</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="support.js"></script>
+</body>
+</html>
