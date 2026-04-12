@@ -5,7 +5,6 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
 
-// ImgBB API key
 const IMGBB_API_KEY = 'bc1c7edb270f7c38725b31c47680d9bb';
 
 let currentUserEmail = null;
@@ -45,6 +44,7 @@ const backBtn = document.getElementById('back-to-tickets-btn');
 const chatTicketTitle = document.getElementById('chat-ticket-title');
 const chatTicketStatus = document.getElementById('chat-ticket-status');
 const attachBtn = document.getElementById('attach-btn');
+const fileInputHidden = document.getElementById('file-input-hidden');
 const imagePreviewArea = document.getElementById('image-preview-area');
 const previewImg = document.getElementById('preview-img');
 const removePreviewBtn = document.getElementById('remove-preview-btn');
@@ -84,6 +84,7 @@ async function loadUserProfile(email) {
                 newNameInput.value = user.displayName;
             } else {
                 displayNameText.textContent = 'Anonymous';
+                currentDisplayName = 'Anonymous';
             }
 
             profileSubText.textContent = isAdminUser ? 'Admin' : 'Press "Edit Display Name" to set your name';
@@ -104,24 +105,25 @@ async function loadUserProfile(email) {
 
 function updateAvatarDisplay() {
     profileAvatarEl.style.background = 'transparent';
+    profileAvatarEl.style.width = '36px';
+    profileAvatarEl.style.height = '36px';
+    profileAvatarEl.style.borderRadius = '50%';
+    profileAvatarEl.style.display = 'flex';
+    profileAvatarEl.style.alignItems = 'center';
+    profileAvatarEl.style.justifyContent = 'center';
+
     if (isAdminUser) {
         profileAvatarEl.innerHTML = `<img src="${adminPfpURL}" alt="Admin" style="width:36px;height:36px;border-radius:50%;object-fit:cover;">`;
     } else if (currentDisplayName !== 'Anonymous') {
         const initial = currentDisplayName.charAt(0).toUpperCase();
-        profileAvatarEl.innerHTML = `<span style="font-size:18px;font-weight:700;color:white;">${initial}</span>`;
         profileAvatarEl.style.background = 'var(--accent-primary)';
-        profileAvatarEl.style.borderRadius = '50%';
-        profileAvatarEl.style.width = '36px';
-        profileAvatarEl.style.height = '36px';
-        profileAvatarEl.style.display = 'flex';
-        profileAvatarEl.style.alignItems = 'center';
-        profileAvatarEl.style.justifyContent = 'center';
+        profileAvatarEl.innerHTML = `<span style="font-size:18px;font-weight:700;color:white;">${initial}</span>`;
     } else {
         profileAvatarEl.innerHTML = defaultPfpSVG;
     }
 }
 
-// Edit Name Modal
+// Edit Name
 editNameBtn.addEventListener('click', () => {
     newNameInput.value = currentDisplayName === 'Anonymous' ? '' : currentDisplayName;
     editNameModal.classList.remove('hidden');
@@ -212,9 +214,12 @@ submitTicketBtn.addEventListener('click', async () => {
 // Load tickets
 function loadTickets() {
     let query;
+
     if (isAdminUser) {
+        // Admins see all tickets
         query = database.ref('tickets');
     } else if (currentUserEmail) {
+        // Users see their own tickets
         query = database.ref('tickets').orderByChild('authorEmail').equalTo(currentUserEmail);
     } else {
         myTicketsList.innerHTML = '<p class="empty-state">Login to view your tickets.</p>';
@@ -235,7 +240,7 @@ function loadTickets() {
                 const authorName = ticket.authorName || 'Anonymous';
 
                 html += `
-                    <div class="ticket-card status-${statusClass}" data-key="${key}">
+                    <div class="ticket-card status-${statusClass}">
                         <div class="ticket-header">
                             <span class="ticket-title">${escapeHtml(ticket.subject)}</span>
                             <div class="ticket-meta">
@@ -244,6 +249,7 @@ function loadTickets() {
                             </div>
                         </div>
                         <p class="ticket-description" style="margin-bottom:12px;">${escapeHtml(ticket.description)}</p>
+                        ${ticket.closeReason ? `<div class="ticket-close-reason">Closed by staff: ${escapeHtml(ticket.closeReason)}</div>` : ''}
                         <div class="ticket-footer">
                             <span class="ticket-date">By ${escapeHtml(authorName)} — ${date}</span>
                             <button class="open-chat-btn primary-btn" data-key="${key}" data-title="${escapeHtml(ticket.subject)}" data-status="${statusClass}">
@@ -277,7 +283,6 @@ function openChat(ticketKey, title, status) {
     chatView.classList.remove('hidden');
     chatMessages.innerHTML = '';
 
-    // Remove previous listener
     if (chatListener) {
         database.ref('ticket_messages/' + chatListener).off();
     }
@@ -286,14 +291,11 @@ function openChat(ticketKey, title, status) {
     database.ref('ticket_messages/' + ticketKey).on('value', (snapshot) => {
         const messages = snapshot.val();
         chatMessages.innerHTML = '';
-
         if (messages) {
             Object.keys(messages).forEach(key => {
-                const msg = messages[key];
-                renderMessage(msg);
+                renderMessage(messages[key]);
             });
         }
-
         chatMessages.scrollTop = chatMessages.scrollHeight;
     });
 }
@@ -361,7 +363,7 @@ async function sendMessage() {
 
     if (pendingImageURL) {
         const ext = pendingImageURL.toLowerCase();
-        if (ext.includes('.mp4') || ext.includes('.webm')) {
+        if (ext.includes('.mp4') || ext.includes('.webm') || ext.startsWith('blob:')) {
             msgData.type = 'video';
         } else {
             msgData.type = 'image';
@@ -379,88 +381,86 @@ async function sendMessage() {
         pendingImageURL = null;
         imagePreviewArea.classList.add('hidden');
         previewImg.src = '';
+        previewImg.style.display = 'none';
+        const inner = document.querySelector('.image-preview-inner');
+        const oldVideo = inner ? inner.querySelector('video') : null;
+        if (oldVideo) oldVideo.remove();
     } catch (error) {
         console.error('Error sending message:', error);
     }
 }
 
-// Attach button - uses ImgBB upload
+// Attach button - opens file picker directly
 attachBtn.addEventListener('click', () => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*,video/mp4,video/webm';
-    input.click();
+    fileInputHidden.value = '';
+    fileInputHidden.click();
+});
 
-    input.addEventListener('change', async () => {
-        const file = input.files[0];
-        if (!file) return;
+fileInputHidden.addEventListener('change', async () => {
+    const file = fileInputHidden.files[0];
+    if (!file) return;
 
-        const isVideo = file.type.startsWith('video/');
+    const isVideo = file.type.startsWith('video/');
 
-        if (isVideo) {
-            // For video, create object URL for preview and upload differently
-            const objectURL = URL.createObjectURL(file);
-            // Videos can't be uploaded to ImgBB, store as data URL or skip preview
-            // Show preview
-            previewImg.src = '';
-            previewImg.style.display = 'none';
-            imagePreviewArea.classList.remove('hidden');
+    attachBtn.disabled = true;
+    attachBtn.style.opacity = '0.5';
 
-            // Upload video to ImgBB is not supported, so we read as base64 and note URL
-            // Actually just create a blob URL for now (works within session)
-            pendingImageURL = objectURL;
+    if (isVideo) {
+        const objectURL = URL.createObjectURL(file);
+        pendingImageURL = objectURL;
+        previewImg.style.display = 'none';
+        imagePreviewArea.classList.remove('hidden');
 
-            const videoPreview = document.createElement('video');
-            videoPreview.src = objectURL;
-            videoPreview.controls = true;
-            videoPreview.style.cssText = 'max-width:100%;max-height:120px;border-radius:8px;';
-            const inner = document.querySelector('.image-preview-inner');
-            // Remove old video if any
-            const oldVideo = inner.querySelector('video');
-            if (oldVideo) oldVideo.remove();
-            inner.insertBefore(videoPreview, inner.querySelector('button'));
-            return;
-        }
+        const inner = document.querySelector('.image-preview-inner');
+        const oldVideo = inner.querySelector('video');
+        if (oldVideo) oldVideo.remove();
 
-        // Image - upload to ImgBB
-        attachBtn.disabled = true;
-        attachBtn.style.opacity = '0.5';
+        const videoPreview = document.createElement('video');
+        videoPreview.src = objectURL;
+        videoPreview.controls = true;
+        videoPreview.style.cssText = 'max-width:160px;max-height:100px;border-radius:8px;';
+        inner.insertBefore(videoPreview, inner.querySelector('button'));
 
-        const reader = new FileReader();
-        reader.onload = async (e) => {
-            const base64 = e.target.result.split(',')[1];
+        attachBtn.disabled = false;
+        attachBtn.style.opacity = '1';
+        return;
+    }
 
-            try {
-                const formData = new FormData();
-                formData.append('key', IMGBB_API_KEY);
-                formData.append('image', base64);
+    // Image/GIF - upload to ImgBB
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+        const base64 = e.target.result.split(',')[1];
 
-                const response = await fetch('https://api.imgbb.com/1/upload', {
-                    method: 'POST',
-                    body: formData
-                });
+        try {
+            const formData = new FormData();
+            formData.append('key', IMGBB_API_KEY);
+            formData.append('image', base64);
 
-                const data = await response.json();
+            const response = await fetch('https://api.imgbb.com/1/upload', {
+                method: 'POST',
+                body: formData
+            });
 
-                if (data.success) {
-                    pendingImageURL = data.data.url;
-                    previewImg.src = pendingImageURL;
-                    previewImg.style.display = 'block';
-                    imagePreviewArea.classList.remove('hidden');
-                } else {
-                    alert('Image upload failed. Please try again.');
-                }
-            } catch (error) {
-                console.error('ImgBB upload error:', error);
+            const data = await response.json();
+
+            if (data.success) {
+                pendingImageURL = data.data.url;
+                previewImg.src = pendingImageURL;
+                previewImg.style.display = 'block';
+                imagePreviewArea.classList.remove('hidden');
+            } else {
                 alert('Image upload failed. Please try again.');
             }
+        } catch (error) {
+            console.error('ImgBB upload error:', error);
+            alert('Image upload failed. Please try again.');
+        }
 
-            attachBtn.disabled = false;
-            attachBtn.style.opacity = '1';
-        };
+        attachBtn.disabled = false;
+        attachBtn.style.opacity = '1';
+    };
 
-        reader.readAsDataURL(file);
-    });
+    reader.readAsDataURL(file);
 });
 
 removePreviewBtn.addEventListener('click', () => {
@@ -469,11 +469,11 @@ removePreviewBtn.addEventListener('click', () => {
     previewImg.style.display = 'none';
     imagePreviewArea.classList.add('hidden');
     const inner = document.querySelector('.image-preview-inner');
-    const oldVideo = inner.querySelector('video');
+    const oldVideo = inner ? inner.querySelector('video') : null;
     if (oldVideo) oldVideo.remove();
 });
 
-// Back to tickets
+// Back to tickets list
 backBtn.addEventListener('click', () => {
     if (chatListener) {
         database.ref('ticket_messages/' + chatListener).off();
