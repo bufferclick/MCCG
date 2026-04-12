@@ -34,7 +34,6 @@ body {
     padding: 20px;
 }
 
-/* MCCG Header */
 .mccg-container {
     text-align: center;
     max-width: 950px;
@@ -63,21 +62,6 @@ body {
     flex-direction: column;
     align-items: center;
     position: relative;
-}
-
-/* MCCG Logo in background of preview */
-.mccg-bg-logo-wrap {
-    position: absolute;
-    top: -10px;
-    left: 0px;
-    z-index: 1;
-    pointer-events: none;
-}
-
-.mccg-bg-logo-main {
-    height: 28px;
-    width: auto;
-    opacity: 0.9;
 }
 
 .login-label {
@@ -213,7 +197,7 @@ body {
 .error-content p { font-size: 14px; color: #b5bac1; margin-bottom: 4px; }
 .error-content .error-code { font-family: monospace; font-size: 12px; color: #72767d; margin-top: 16px; }
 
-/* Warning Modal */
+/* Modal */
 .modal {
     position: fixed;
     top: 0; left: 0;
@@ -481,7 +465,6 @@ body {
     font-weight: 600;
 }
 
-/* Code Generator */
 .code-generator { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
 
 .generated-code {
@@ -509,7 +492,6 @@ body {
 
 .codes-list-section { margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--border-color); }
 .codes-list-section h3 { font-size: 16px; font-weight: 600; margin-bottom: 16px; color: var(--text-secondary); }
-
 .codes-list { display: flex; flex-direction: column; gap: 8px; max-height: 300px; overflow-y: auto; }
 
 .code-item {
@@ -527,18 +509,14 @@ body {
 .code-item-date { font-size: 12px; color: var(--text-muted); }
 .code-item-actions { display: flex; gap: 8px; align-items: center; }
 
-/* Users Table */
 .users-table-container { overflow-x: auto; }
-
 .users-table { width: 100%; border-collapse: collapse; }
 
 .users-table th,
 .users-table td { padding: 14px 16px; text-align: left; border-bottom: 1px solid var(--border-color); }
 
 .users-table th { color: var(--text-secondary); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-
 .users-table td { font-size: 14px; }
-
 .users-table tbody tr:hover { background: rgba(255,255,255,0.02); }
 
 .password-cell { display: flex; align-items: center; gap: 8px; }
@@ -547,7 +525,6 @@ body {
 
 .empty-state { color: var(--text-muted); text-align: center; padding: 24px; }
 
-/* Stats */
 .stats-section {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -599,11 +576,8 @@ body {
 .ticket-status.resolved { background: rgba(67,181,129,0.2); color: var(--accent-success); }
 
 .ticket-category-badge { font-size: 11px; padding: 3px 8px; border-radius: 4px; background: rgba(255,255,255,0.08); color: var(--text-secondary); text-transform: capitalize; }
-
 .ticket-description { color: var(--text-secondary); font-size: 13px; line-height: 1.5; margin-bottom: 12px; }
-
 .ticket-footer { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
-
 .ticket-author-row { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
 
 .ticket-pfp { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
@@ -625,7 +599,6 @@ body {
 .ticket-author-email { font-size: 11px; color: var(--text-muted); }
 .ticket-date { font-size: 12px; color: var(--text-muted); }
 .ticket-date-small { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
-
 .ticket-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 
 .ticket-close-reason {
@@ -655,7 +628,6 @@ body {
 
 /* Support Page */
 .support-page { min-height: 100vh; display: flex; flex-direction: column; }
-
 .support-header { background: var(--bg-secondary); border-bottom: 1px solid var(--border-color); padding: 0 32px; }
 
 .support-header-inner {
@@ -680,7 +652,6 @@ body {
 }
 
 .support-logo-sub { color: var(--text-muted); font-size: 13px; margin-left: 2px; }
-
 .support-nav { display: flex; gap: 16px; }
 .nav-link { color: var(--text-secondary); text-decoration: none; font-size: 14px; transition: color 0.2s; }
 .nav-link:hover { color: var(--text-primary); }
@@ -696,7 +667,6 @@ body {
 
 .not-logged-in-banner a { color: var(--accent-primary); }
 
-/* Profile Bar */
 .profile-bar { background: rgba(0,0,0,0.15); border-bottom: 1px solid var(--border-color); padding: 0 32px; }
 
 .profile-bar-inner {
@@ -727,10 +697,8 @@ body {
 .profile-sub-text { font-size: 11px; color: var(--text-muted); }
 
 .support-main { flex: 1; padding: 32px; max-width: 900px; margin: 0 auto; width: 100%; }
-
 .support-section { background: var(--bg-secondary); border-radius: 12px; padding: 24px; margin-bottom: 24px; border: 1px solid var(--border-color); }
 
-/* Ticket Form */
 .ticket-form { display: flex; flex-direction: column; gap: 16px; }
 .form-group { display: flex; flex-direction: column; gap: 8px; }
 .form-group label { color: var(--text-secondary); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
@@ -804,7 +772,6 @@ body {
 .back-btn:hover { background: rgba(255,255,255,0.08); color: var(--text-primary); }
 
 .chat-header-info { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
-
 .chat-title { font-size: 15px; font-weight: 600; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 .chat-messages {
@@ -819,7 +786,6 @@ body {
 
 .chat-message { display: flex; gap: 10px; align-items: flex-start; }
 .chat-message.mine { flex-direction: row-reverse; }
-
 .msg-pfp-wrap { flex-shrink: 0; }
 
 .msg-pfp { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; }
@@ -873,9 +839,7 @@ body {
 .chat-image:hover { opacity: 0.9; }
 .chat-video { max-width: 280px; max-height: 200px; border-radius: 10px; display: block; }
 
-/* Chat Input */
 .chat-input-area { padding: 12px 16px; background: var(--bg-secondary); border-top: 1px solid var(--border-color); }
-
 .chat-input-row { display: flex; align-items: flex-end; gap: 8px; }
 
 .attach-btn {
@@ -973,7 +937,6 @@ body {
     .support-main { padding: 16px; }
     .support-header { padding: 0 16px; }
     .profile-bar { padding: 0 16px; }
-    .mccg-bg-logo-wrap { display: none; }
 }
 
 @media (max-width: 600px) {
