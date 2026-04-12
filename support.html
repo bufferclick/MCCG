@@ -10,7 +10,6 @@
     <meta property="og:image" content="https://i.ibb.co/HDxMBCcJ/gpt-image-1-5-high-fidelity-a-Make-the-M-have-a-pu.png">
     <meta name="theme-color" content="#5865f2">
     <title>MCCG - Tickets</title>
-    <script async src="https://imgbb.com/upload.js"></script>
 </head>
 <body>
     <div class="support-page">
@@ -48,6 +47,7 @@
             </div>
         </div>
 
+        <!-- Edit Name Modal -->
         <div id="edit-name-modal" class="modal hidden">
             <div class="modal-backdrop" id="edit-name-backdrop"></div>
             <div class="modal-content">
@@ -127,11 +127,13 @@
 
                     <div class="chat-input-area">
                         <div class="chat-input-row">
-                            <button id="attach-btn" class="attach-btn" title="Attach Image">
+                            <button id="attach-btn" class="attach-btn" title="Attach file">
                                 <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
                                     <path d="M17 7v11.5c0 2.76-2.24 5-5 5s-5-2.24-5-5V6c0-1.93 1.57-3.5 3.5-3.5S14 4.07 14 6v10.5c0 1.1-.9 2-2 2s-2-.9-2-2V7H8v9.5c0 1.93 1.57 3.5 3.5 3.5S15 18.43 15 16.5V6c0-2.76-2.24-5-5-5S5 3.24 5 6v12.5c0 3.58 2.92 6.5 6.5 6.5s6.5-2.92 6.5-6.5V7h-1z"/>
                                 </svg>
                             </button>
+                            <!-- Hidden file input -->
+                            <input type="file" id="file-input-hidden" accept="image/*,video/mp4,video/webm,.gif" style="display:none;">
                             <textarea id="chat-input" class="chat-input" placeholder="Type a message..." rows="1" maxlength="2000"></textarea>
                             <button id="send-msg-btn" class="send-btn">
                                 <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
@@ -141,7 +143,7 @@
                         </div>
                         <div id="image-preview-area" class="image-preview-area hidden">
                             <div class="image-preview-inner">
-                                <img id="preview-img" src="" alt="Preview">
+                                <img id="preview-img" src="" alt="Preview" style="display:none;">
                                 <button id="remove-preview-btn" class="remove-preview-btn">
                                     <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
                                         <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
