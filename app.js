@@ -5,7 +5,7 @@ const firebaseConfig = {
 // ============================================
 // LOGIN PAGE DOMAIN - CHANGE THIS TO UPDATE
 // ============================================
-const LOGIN_PAGE_URL = "mccg.netlify.app";
+const LOGIN_PAGE_URL = "https://mccg.netlify.app";
 // ============================================
 
 firebase.initializeApp(firebaseConfig);
